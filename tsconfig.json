@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "noEmit": true, "noCheck": true, "module": "esnext", "moduleResolution": "bundler", "target": "ES2022" },
+  "files": ["sst.config.ts"]
+}

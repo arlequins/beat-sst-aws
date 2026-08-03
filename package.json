@@ -1,0 +1,21 @@
+{
+  "name": "beat-sst-aws",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "aws-account-baseline-sst": "github:arlequins/template-sst-aws#v0.5.0"
+  },
+  "devDependencies": {
+    "sst": "4.17.1",
+    "typescript": "^5.6.0"
+  },
+  "scripts": {
+    "check": "tsc --project tsconfig.json",
+    "install:sst": "sst install",
+    "diff": "sst diff",
+    "deploy": "sst deploy",
+    "verify": "pnpm check && pnpm install:sst"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
