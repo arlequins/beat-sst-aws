@@ -65,7 +65,10 @@ export default $config({
       readerRoleArn: deployRole.arn,
       tags,
     });
-    const anomaly = createCostAnomalyAlerts({ email });
+    const anomaly = createCostAnomalyAlerts({
+      email,
+      monitorArn: required("COST_ANOMALY_MONITOR_ARN"),
+    });
 
     return {
       ...baseline,

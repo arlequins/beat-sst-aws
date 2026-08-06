@@ -42,6 +42,11 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_BOOTSTRAP_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
+      - name: Resolve the AWS-managed Cost Anomaly monitor
+        run: |
+          monitor_arn="$(aws ce get-anomaly-monitors --query 'AnomalyMonitors[?MonitorType==`DIMENSIONAL` && MonitorDimension==`SERVICE`].MonitorArn | [0]' --output text)"
+          test -n "$monitor_arn" && test "$monitor_arn" != "None"
+          echo "COST_ANOMALY_MONITOR_ARN=$monitor_arn" >> "$GITHUB_ENV"
       - name: Review planned changes
         if: inputs.operation == 'diff'
         run: pnpm exec sst diff --stage production
