@@ -31,15 +31,23 @@ roles, and application resources owned by `arlequins/beat`.
 
 ## Validation and deployment
 
-1. Run `pnpm install` and `pnpm verify`.
-2. Copy `.env.example` to `.env` and replace the placeholder email and owner.
-3. Sign in with an IAM Identity Center SSO profile.
-4. Run `pnpm diff -- --stage production` and review every retained or
-   account-level resource.
-5. Deploy manually with `pnpm deploy -- --stage production` only after review.
-6. Populate the emitted Secrets Manager secret outside SST state.
-7. Configure the Beat repository's protected `production` GitHub Environment
-   with the emitted role ARN and runtime secret ARN.
+Never run `sst diff` or `sst deploy` locally. The protected `Bootstrap AWS
+account` GitHub Actions workflow is the only execution path.
+
+Before its first run, create the GitHub OIDC provider and the
+`AWS_BOOTSTRAP_ROLE_ARN` role once in the AWS Console. Its trust policy must
+allow only `repo:arlequins/beat-sst-aws:environment:production`. Do not create
+an AWS access key for this purpose.
+
+Set the GitHub production Environment variables named in
+`.github/workflows/bootstrap.yml`, run `diff`, review the plan, then run
+`deploy` through that same protected Environment. Populate the emitted Secrets
+Manager secret outside SST state and configure the Beat repository's protected
+`production` Environment with the emitted role ARN and runtime secret ARN.
+
+`GITHUB_OIDC_PROVIDER_ARN` must reference the one provider created manually
+for `https://token.actions.githubusercontent.com`; the SST project reuses it
+rather than trying to create a duplicate provider.
 
 This bootstrap is intentionally production-only. It must not be used for
 preview stages and it is not deployed automatically from this repository.

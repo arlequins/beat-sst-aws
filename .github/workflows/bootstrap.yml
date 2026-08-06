@@ -1,0 +1,50 @@
+name: Bootstrap AWS account
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Review or apply the production bootstrap
+        required: true
+        type: choice
+        options: [diff, deploy]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  bootstrap:
+    environment: production
+    runs-on: ubuntu-latest
+    concurrency:
+      group: beat-aws-bootstrap-production
+      cancel-in-progress: false
+    env:
+      ACKNOWLEDGE_ACCOUNT_BASELINE: "true"
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      BEAT_OWNER: ${{ vars.BEAT_OWNER }}
+      BEAT_RUNTIME_SECRET_NAME: ${{ vars.BEAT_RUNTIME_SECRET_NAME }}
+      BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
+      MONTHLY_BUDGET_USD: ${{ vars.MONTHLY_BUDGET_USD }}
+      ENABLE_AUDIT_TRAIL: ${{ vars.ENABLE_AUDIT_TRAIL }}
+      GITHUB_OIDC_PROVIDER_ARN: ${{ vars.GITHUB_OIDC_PROVIDER_ARN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Assume the bootstrap role through GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_BOOTSTRAP_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Review planned changes
+        if: inputs.operation == 'diff'
+        run: pnpm diff -- --stage production
+      - name: Apply reviewed changes
+        if: inputs.operation == 'deploy'
+        run: pnpm deploy -- --stage production

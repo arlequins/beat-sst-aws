@@ -19,7 +19,6 @@ export default $config({
     const {
       createAccessAnalyzer,
       createCostAnomalyAlerts,
-      createGitHubOidcProvider,
       createGitHubOidcRole,
       createRuntimeSecret,
       standardTags,
@@ -50,12 +49,11 @@ export default $config({
       enableAuditTrail: process.env.ENABLE_AUDIT_TRAIL === "true",
     });
     const analyzer = createAccessAnalyzer("beat-account-access", tags);
-    const github = createGitHubOidcProvider(tags);
     const deployRole = createGitHubOidcRole({
       name: "beat-github-production",
       repository: "arlequins/beat",
       environment: "production",
-      providerArn: github.arn,
+      providerArn: required("GITHUB_OIDC_PROVIDER_ARN"),
       tags,
     });
     const secret = createRuntimeSecret({
