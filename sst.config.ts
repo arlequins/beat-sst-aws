@@ -54,6 +54,8 @@ export default $config({
       repository: "arlequins/beat",
       environment: "production",
       providerArn: required("AWS_OIDC_PROVIDER_ARN"),
+      subject:
+        "repo:arlequins@21003599/beat@1309360407:environment:production",
       tags,
     });
     const secret = createRuntimeSecret({
