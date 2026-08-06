@@ -22,13 +22,13 @@ jobs:
       cancel-in-progress: false
     env:
       ACKNOWLEDGE_ACCOUNT_BASELINE: "true"
-      AWS_REGION: ${{ vars.AWS_REGION }}
-      BEAT_OWNER: ${{ vars.BEAT_OWNER }}
-      BEAT_RUNTIME_SECRET_NAME: ${{ vars.BEAT_RUNTIME_SECRET_NAME }}
-      BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
-      MONTHLY_BUDGET_USD: ${{ vars.MONTHLY_BUDGET_USD }}
-      ENABLE_AUDIT_TRAIL: ${{ vars.ENABLE_AUDIT_TRAIL }}
-      AWS_OIDC_PROVIDER_ARN: ${{ vars.AWS_OIDC_PROVIDER_ARN }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      BEAT_OWNER: ${{ secrets.BEAT_OWNER }}
+      BEAT_RUNTIME_SECRET_NAME: ${{ secrets.BEAT_RUNTIME_SECRET_NAME }}
+      BUDGET_ALERT_EMAIL: ${{ secrets.BUDGET_ALERT_EMAIL }}
+      MONTHLY_BUDGET_USD: ${{ secrets.MONTHLY_BUDGET_USD }}
+      ENABLE_AUDIT_TRAIL: ${{ secrets.ENABLE_AUDIT_TRAIL }}
+      AWS_OIDC_PROVIDER_ARN: ${{ secrets.AWS_OIDC_PROVIDER_ARN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -40,7 +40,7 @@ jobs:
       - name: Assume the bootstrap role through GitHub OIDC
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ vars.AWS_BOOTSTRAP_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_BOOTSTRAP_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
       - name: Review planned changes
         if: inputs.operation == 'diff'
