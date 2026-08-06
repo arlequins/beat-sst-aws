@@ -1,0 +1,10 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "beat-sst-aws",
+      "include-component-in-tag": false,
+      "include-v-in-tag": true
+    }
+  }
+}

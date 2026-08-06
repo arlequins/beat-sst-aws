@@ -1,7 +1,7 @@
 # Beat AWS bootstrap
 
 This is the production account-bootstrap consumer of
-`aws-account-baseline-sst` **v0.5.0**. It creates account controls, a GitHub
+`aws-account-baseline-sst` **v0.5.5**. It creates account controls, a GitHub
 OIDC production role, and an empty Secrets Manager container. It does not put
 secret values into SST state and it does not deploy the Beat application.
 
@@ -30,6 +30,12 @@ scope it to the SST state and asset resources, CloudFormation stacks, IAM
 roles, and application resources owned by `arlequins/beat`.
 
 ## Validation and deployment
+
+Releases are created through Release Please after CI passes on `main`. Use
+Conventional Commits: `fix:` releases a patch, `feat:` releases a minor, and a
+breaking-change marker releases a major version. The release PR updates the
+package version and manifest, then creates the matching `vX.Y.Z` tag and GitHub
+Release when merged.
 
 Never run `sst diff` or `sst deploy` locally. The protected `Bootstrap AWS
 account` GitHub Actions workflow is the only execution path.
