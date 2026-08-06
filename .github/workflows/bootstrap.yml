@@ -28,7 +28,7 @@ jobs:
       BUDGET_ALERT_EMAIL: ${{ vars.BUDGET_ALERT_EMAIL }}
       MONTHLY_BUDGET_USD: ${{ vars.MONTHLY_BUDGET_USD }}
       ENABLE_AUDIT_TRAIL: ${{ vars.ENABLE_AUDIT_TRAIL }}
-      GITHUB_OIDC_PROVIDER_ARN: ${{ vars.GITHUB_OIDC_PROVIDER_ARN }}
+      AWS_OIDC_PROVIDER_ARN: ${{ vars.AWS_OIDC_PROVIDER_ARN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

@@ -53,7 +53,7 @@ export default $config({
       name: "beat-github-production",
       repository: "arlequins/beat",
       environment: "production",
-      providerArn: required("GITHUB_OIDC_PROVIDER_ARN"),
+      providerArn: required("AWS_OIDC_PROVIDER_ARN"),
       tags,
     });
     const secret = createRuntimeSecret({

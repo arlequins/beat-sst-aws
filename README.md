@@ -45,7 +45,7 @@ Set the GitHub production Environment variables named in
 Manager secret outside SST state and configure the Beat repository's protected
 `production` Environment with the emitted role ARN and runtime secret ARN.
 
-`GITHUB_OIDC_PROVIDER_ARN` must reference the one provider created manually
+`AWS_OIDC_PROVIDER_ARN` must reference the one provider created manually
 for `https://token.actions.githubusercontent.com`; the SST project reuses it
 rather than trying to create a duplicate provider.
 
