@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       aws-account-baseline-sst:
-        specifier: github:arlequins/template-sst-aws#v0.5.1
-        version: https://codeload.github.com/arlequins/template-sst-aws/tar.gz/88f45f810ac7df86b70110a4d66603c3913d0e91
+        specifier: github:arlequins/template-sst-aws#v0.5.2
+        version: https://codeload.github.com/arlequins/template-sst-aws/tar.gz/794d608270df0bb70c2fb318e785fd645a1e46ec
     devDependencies:
       sst:
         specifier: 4.17.1
@@ -113,9 +113,9 @@ packages:
     resolution: {integrity: sha512-0JFs3V2y2M9tKW5na/qxe69Zv+uxLMO7QBbhxF/FHu/Gp2NFZAAL9tWl9PU02xxo07pb3G9FTyjNc6D5uZrJIg==}
     engines: {node: '>=18.0.0'}
 
-  aws-account-baseline-sst@https://codeload.github.com/arlequins/template-sst-aws/tar.gz/88f45f810ac7df86b70110a4d66603c3913d0e91:
-    resolution: {tarball: https://codeload.github.com/arlequins/template-sst-aws/tar.gz/88f45f810ac7df86b70110a4d66603c3913d0e91}
-    version: 0.5.1
+  aws-account-baseline-sst@https://codeload.github.com/arlequins/template-sst-aws/tar.gz/794d608270df0bb70c2fb318e785fd645a1e46ec:
+    resolution: {tarball: https://codeload.github.com/arlequins/template-sst-aws/tar.gz/794d608270df0bb70c2fb318e785fd645a1e46ec}
+    version: 0.5.2
     engines: {node: '>=22'}
 
   aws4fetch@1.0.18:
@@ -384,7 +384,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  aws-account-baseline-sst@https://codeload.github.com/arlequins/template-sst-aws/tar.gz/88f45f810ac7df86b70110a4d66603c3913d0e91: {}
+  aws-account-baseline-sst@https://codeload.github.com/arlequins/template-sst-aws/tar.gz/794d608270df0bb70c2fb318e785fd645a1e46ec: {}
 
   aws4fetch@1.0.18: {}
 
