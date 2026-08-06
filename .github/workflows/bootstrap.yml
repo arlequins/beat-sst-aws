@@ -41,10 +41,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_BOOTSTRAP_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Review planned changes
         if: inputs.operation == 'diff'
-        run: pnpm diff -- --stage production
+        run: pnpm exec sst diff --stage production
       - name: Apply reviewed changes
         if: inputs.operation == 'deploy'
-        run: pnpm deploy -- --stage production
+        run: pnpm exec sst deploy --stage production
