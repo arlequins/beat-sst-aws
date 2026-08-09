@@ -13,9 +13,10 @@
   "scripts": {
     "check": "tsc --project tsconfig.json",
     "install:sst": "sst install",
+    "test": "node --test scripts/**/*.test.mjs",
     "diff": "sst diff",
     "deploy": "sst deploy",
-    "verify": "pnpm check && pnpm install:sst"
+    "verify": "pnpm check && pnpm test && pnpm install:sst"
   },
   "packageManager": "pnpm@10.33.0"
 }
