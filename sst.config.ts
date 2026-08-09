@@ -49,6 +49,12 @@ export default $config({
       enableAuditTrail: process.env.ENABLE_AUDIT_TRAIL === "true",
     });
     const analyzer = createAccessAnalyzer("beat-account-access", tags);
+    const cloudWatchAlarmEventsServiceLinkedRole =
+      new aws.iam.ServiceLinkedRole("CloudWatchAlarmEventsServiceLinkedRole", {
+        awsServiceName: "events.amazonaws.com",
+        description:
+          "Allows CloudWatch alarm actions to use CloudWatch Events.",
+      });
     const deployRole = createGitHubOidcRole({
       name: "beat-github-production",
       repository: "arlequins/beat",
@@ -164,6 +170,7 @@ export default $config({
           effect: "Allow",
           actions: [
             "s3:CreateBucket",
+            "s3:GetBucketAcl",
             "s3:GetBucketCORS",
             "s3:GetBucketLocation",
             "s3:GetBucketObjectLockConfiguration",
@@ -348,6 +355,8 @@ export default $config({
       ...baseline,
       accessAnalyzer: analyzer.arn,
       anomalySubscription: anomaly.arn,
+      cloudWatchAlarmEventsServiceLinkedRoleArn:
+        cloudWatchAlarmEventsServiceLinkedRole.arn,
       githubProductionRoleArn: deployRole.arn,
       runtimeSecretArn: secret.arn,
     };
