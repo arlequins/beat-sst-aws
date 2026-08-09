@@ -97,7 +97,7 @@ export default $config({
       statements: [
         {
           effect: "Allow",
-          actions: ["ssm:GetParameter"],
+          actions: ["ssm:GetParameter", "ssm:PutParameter"],
           resources: [
             "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production",
           ],

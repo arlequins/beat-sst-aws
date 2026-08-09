@@ -37,12 +37,23 @@ test("limits SST bootstrap parameter access to one read action and ARN", () => {
   );
 });
 
-test("limits API passphrase access to one read action and ARN", () => {
-  assertSingleParameterRead(
-    policySource(
-      "apiPassphraseParameterReadPolicy",
-      "BeatApiPassphraseParameterRead",
+test("limits API passphrase initialization to Get and Put on one ARN", () => {
+  const policy = policySource(
+    "apiPassphraseParameterReadPolicy",
+    "BeatApiPassphraseParameterRead",
+  );
+  assert.match(
+    policy,
+    /actions: \["ssm:GetParameter", "ssm:PutParameter"\]/,
+  );
+  assert.ok(
+    policy.includes(
+      "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production",
     ),
-    "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production",
+  );
+  assert.doesNotMatch(policy, /ssm:\*/);
+  assert.doesNotMatch(
+    policy,
+    /ssm:(DeleteParameter|GetParameters|GetParametersByPath|GetParameterHistory|DescribeParameters)/,
   );
 });
