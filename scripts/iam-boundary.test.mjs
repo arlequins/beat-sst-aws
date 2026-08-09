@@ -107,7 +107,9 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "s3:CreateBucket",
     "s3:GetAccelerateConfiguration",
     "s3:GetBucketAcl",
+    "s3:GetBucketRequestPayment",
     "s3:GetBucketWebsite",
+    "s3:GetObjectTagging",
     "s3:ListBucket",
     "s3:PutBucketPublicAccessBlock",
     "s3:PutBucketVersioning",
@@ -149,11 +151,11 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
   assert.match(
     policy,
-    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:GetAccelerateConfiguration"[\s\S]*?"s3:GetBucketAcl"[\s\S]*?"s3:GetBucketWebsite"[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
+    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:GetAccelerateConfiguration"[\s\S]*?"s3:GetBucketAcl"[\s\S]*?"s3:GetBucketRequestPayment"[\s\S]*?"s3:GetBucketWebsite"[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
   );
   assert.match(
     policy,
-    /sid: "ManageExactSstAssetObjects",[\s\S]*?"s3:PutObjectTagging"[\s\S]*?resources: \["arn:aws:s3:::sst-asset-euxnnsccdfbs\/\*"\]/,
+    /sid: "ManageExactSstAssetObjects",[\s\S]*?"s3:GetObjectTagging"[\s\S]*?"s3:PutObjectTagging"[\s\S]*?resources: \["arn:aws:s3:::sst-asset-euxnnsccdfbs\/\*"\]/,
   );
 });
 
@@ -198,5 +200,5 @@ test("rejects broad or destructive API production deployment permissions", () =>
   );
   assert.doesNotMatch(policy, /AdministratorAccess/);
   assert.doesNotMatch(policy, /iam:CreateServiceLinkedRole/);
-  assert.doesNotMatch(policy, /s3:(?:GetObjectTagging|DeleteObjectTagging)/);
+  assert.doesNotMatch(policy, /s3:DeleteObjectTagging/);
 });
