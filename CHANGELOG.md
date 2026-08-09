@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/arlequins/beat-sst-aws/compare/v0.3.0...v0.3.1) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow reading SST bootstrap metadata ([#6](https://github.com/arlequins/beat-sst-aws/issues/6)) ([65d80b1](https://github.com/arlequins/beat-sst-aws/commit/65d80b1e20d422db741efe152ab4eb083f2dfc3f))
+
 ## [0.3.0](https://github.com/arlequins/beat-sst-aws/compare/v0.2.1...v0.3.0) (2026-08-09)
 
 
