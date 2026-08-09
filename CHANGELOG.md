@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/arlequins/beat-sst-aws/compare/v0.3.7...v0.3.8) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow API bucket website reads ([#20](https://github.com/arlequins/beat-sst-aws/issues/20)) ([ccd2815](https://github.com/arlequins/beat-sst-aws/commit/ccd28158479a25259c63d853bf0605b3b83a5d30))
+
 ## [0.3.7](https://github.com/arlequins/beat-sst-aws/compare/v0.3.6...v0.3.7) (2026-08-09)
 
 
