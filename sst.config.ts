@@ -65,6 +65,19 @@ export default $config({
       readerRoleArn: deployRole.arn,
       tags,
     });
+    const runtimeSecretReadPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: ["secretsmanager:GetSecretValue"],
+          resources: [secret.arn],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatRuntimeSecretRead", {
+      role: deployRole.name,
+      policy: runtimeSecretReadPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),
