@@ -57,3 +57,28 @@ test("limits API passphrase initialization to Get and Put on one ARN", () => {
     /ssm:(DeleteParameter|GetParameters|GetParametersByPath|GetParameterHistory|DescribeParameters)/,
   );
 });
+
+test("splits SST state bucket and object access across exact ARNs", () => {
+  const policy = policySource(
+    "sstStateBackendAccessPolicy",
+    "BeatSstStateBackendAccess",
+  );
+  assert.match(
+    policy,
+    /actions: \[\s*"s3:GetBucketLocation",\s*"s3:ListBucket",\s*"s3:ListBucketVersions",\s*\]/,
+  );
+  assert.match(
+    policy,
+    /actions: \[\s*"s3:GetObject",\s*"s3:GetObjectVersion",\s*"s3:PutObject",\s*"s3:DeleteObject",\s*\]/,
+  );
+  assert.ok(policy.includes('resources: ["arn:aws:s3:::sst-state-euxnnsccdfbs"]'));
+  assert.ok(
+    policy.includes('resources: ["arn:aws:s3:::sst-state-euxnnsccdfbs/*"]'),
+  );
+  assert.doesNotMatch(policy, /s3:\*/);
+  assert.doesNotMatch(policy, /sst-\*/);
+  assert.doesNotMatch(
+    policy,
+    /s3:(DeleteObjectVersion|CreateBucket|DeleteBucket|PutBucketPolicy|DeleteBucketPolicy)/,
+  );
+});

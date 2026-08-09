@@ -23,7 +23,7 @@ Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
 its generated bucket names into the API and retains them in production.
 
-The generated GitHub role contains the narrow OIDC trust policy and three separate
+The generated GitHub role contains the narrow OIDC trust policy and four separate
 inline identity policies:
 
 - `secretsmanager:GetSecretValue` for this bootstrap's emitted runtime-secret
@@ -33,7 +33,10 @@ inline identity policies:
 - `ssm:GetParameter` and `ssm:PutParameter` for the exact API production SST
   passphrase parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production`
-  only, allowing SST to initialize the missing passphrase once.
+  only, allowing SST to initialize the missing passphrase once; and
+- state backend bucket metadata/list access on
+  `arn:aws:s3:::sst-state-euxnnsccdfbs`, plus state object read/write/delete
+  access on `arn:aws:s3:::sst-state-euxnnsccdfbs/*`.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
@@ -43,6 +46,12 @@ parameter wildcard, deletion, path access, history, or enumeration action. The
 default Secrets Manager encryption key does not require a separate `kms:Decrypt`
 grant. If a customer-managed key is introduced, review and add a key-scoped
 decrypt grant separately.
+
+The SST state backend bucket already belongs to the account bootstrap. Its
+separate policy permits normal state pull, diff, deploy, and rollback without
+granting `DeleteObjectVersion`, bucket creation/deletion, bucket policy changes,
+or an `sst-*` bucket wildcard. Beat application buckets remain application-owned
+and are not covered by this state-backend policy.
 
 This bootstrap deliberately does **not** grant broad SST or Beat application
 deployment permissions. The Beat application must derive a separate reviewed
