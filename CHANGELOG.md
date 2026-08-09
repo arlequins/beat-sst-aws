@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.10](https://github.com/arlequins/beat-sst-aws/compare/v0.3.9...v0.3.10) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow reviewed S3 tag and payment reads ([#24](https://github.com/arlequins/beat-sst-aws/issues/24)) ([984ae64](https://github.com/arlequins/beat-sst-aws/commit/984ae6454e501e3e94441aa86297b61a8add8552))
+
 ## [0.3.9](https://github.com/arlequins/beat-sst-aws/compare/v0.3.8...v0.3.9) (2026-08-09)
 
 
