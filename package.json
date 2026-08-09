@@ -1,7 +1,7 @@
 {
   "name": "beat-sst-aws",
   "private": true,
-  "version": "0.3.3",
+  "version": "0.3.4",
   "type": "module",
   "dependencies": {
     "aws-account-baseline-sst": "github:arlequins/template-sst-aws#v0.5.5"
