@@ -175,6 +175,7 @@ export default $config({
             "s3:GetBucketVersioning",
             "s3:GetEncryptionConfiguration",
             "s3:GetLifecycleConfiguration",
+            "s3:ListBucket",
             "s3:PutBucketCORS",
             "s3:PutBucketObjectLockConfiguration",
             "s3:PutBucketOwnershipControls",
