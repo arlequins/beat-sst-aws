@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.9](https://github.com/arlequins/beat-sst-aws/compare/v0.3.8...v0.3.9) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow reviewed S3 provider operations ([#22](https://github.com/arlequins/beat-sst-aws/issues/22)) ([fdd430d](https://github.com/arlequins/beat-sst-aws/commit/fdd430debaa7ff4f05dba301f763ff0e9b17f5d0))
+
 ## [0.3.8](https://github.com/arlequins/beat-sst-aws/compare/v0.3.7...v0.3.8) (2026-08-09)
 
 
