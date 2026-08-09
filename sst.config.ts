@@ -162,6 +162,7 @@ export default $config({
             "s3:GetObject",
             "s3:ListMultipartUploadParts",
             "s3:PutObject",
+            "s3:PutObjectTagging",
           ],
           resources: ["arn:aws:s3:::sst-asset-euxnnsccdfbs/*"],
         },
@@ -170,6 +171,7 @@ export default $config({
           effect: "Allow",
           actions: [
             "s3:CreateBucket",
+            "s3:GetAccelerateConfiguration",
             "s3:GetBucketAcl",
             "s3:GetBucketCORS",
             "s3:GetBucketLocation",
