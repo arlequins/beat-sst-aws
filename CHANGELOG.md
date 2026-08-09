@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/arlequins/beat-sst-aws/compare/v0.3.6...v0.3.7) (2026-08-09)
+
+
+### Bug Fixes
+
+* bootstrap CloudWatch alarm prerequisites ([#18](https://github.com/arlequins/beat-sst-aws/issues/18)) ([a65af4f](https://github.com/arlequins/beat-sst-aws/commit/a65af4f3bb64ede42b9bba02833aa3a34672b511))
+
 ## [0.3.6](https://github.com/arlequins/beat-sst-aws/compare/v0.3.5...v0.3.6) (2026-08-09)
 
 
