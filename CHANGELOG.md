@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/arlequins/beat-sst-aws/compare/v0.3.2...v0.3.3) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow initializing API passphrase ([#10](https://github.com/arlequins/beat-sst-aws/issues/10)) ([83d6d9c](https://github.com/arlequins/beat-sst-aws/commit/83d6d9ce17291c0ce5a072241028b80ab9d925be))
+
 ## [0.3.2](https://github.com/arlequins/beat-sst-aws/compare/v0.3.1...v0.3.2) (2026-08-09)
 
 
