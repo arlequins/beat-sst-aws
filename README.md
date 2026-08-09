@@ -23,11 +23,21 @@ Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
 its generated bucket names into the API and retains them in production.
 
-The generated GitHub role contains the narrow trust policy and runtime-secret
-resource policy. Attach the separately reviewed SST deployment permission
-policy before using it in GitHub Actions. Do not attach administrator access;
-scope it to the SST state and asset resources, CloudFormation stacks, IAM
-roles, and application resources owned by `arlequins/beat`.
+The generated GitHub role contains the narrow OIDC trust policy and one inline
+identity policy: `secretsmanager:GetSecretValue` for this bootstrap's emitted
+runtime-secret ARN only. The secret retains the matching resource policy. Both
+halves are required for the production role to read that secret; neither grants
+access to other Secrets Manager secrets. The default Secrets Manager encryption
+key does not require a separate `kms:Decrypt` grant. If a customer-managed key
+is introduced, review and add a key-scoped decrypt grant separately.
+
+This bootstrap deliberately does **not** grant broad SST or Beat application
+deployment permissions. The Beat application must derive a separate reviewed
+policy from its GitHub Actions `sst diff` plan, scoped to its state and asset
+resources, CloudFormation stacks, IAM roles, and application resources. Do not
+attach `AdministratorAccess`, wildcard Secrets Manager permissions, or a
+long-lived access key to this role. Account-wide controls remain owned here;
+application-resource permissions remain owned by `arlequins/beat`.
 
 ## Validation and deployment
 
