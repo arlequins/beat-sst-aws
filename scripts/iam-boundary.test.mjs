@@ -4,26 +4,45 @@ import test from "node:test";
 
 const source = readFileSync(new URL("../sst.config.ts", import.meta.url), "utf8");
 
-test("limits SST bootstrap parameter access to one read action and ARN", () => {
+function policySource(constantName, rolePolicyName) {
   const policyStart = source.indexOf(
-    'const sstBootstrapParameterReadPolicy = aws.iam.getPolicyDocumentOutput',
+    `const ${constantName} = aws.iam.getPolicyDocumentOutput`,
   );
   const policyEnd = source.indexOf(
-    'new aws.iam.RolePolicy("BeatSstBootstrapParameterRead"',
+    `new aws.iam.RolePolicy("${rolePolicyName}"`,
     policyStart,
   );
   assert.notEqual(policyStart, -1);
   assert.notEqual(policyEnd, -1);
+  return source.slice(policyStart, policyEnd);
+}
 
-  const policy = source.slice(policyStart, policyEnd);
+function assertSingleParameterRead(policy, expectedArn) {
   assert.match(policy, /actions: \["ssm:GetParameter"\]/);
-  assert.match(
-    policy,
-    /arn:aws:ssm:ap-northeast-1:205480711070:parameter\/sst\/bootstrap/,
-  );
+  assert.ok(policy.includes(expectedArn));
   assert.doesNotMatch(policy, /ssm:\*/);
   assert.doesNotMatch(
     policy,
-    /ssm:(Put|Delete|GetParameters|GetParameterHistory|Describe)/,
+    /ssm:(PutParameter|DeleteParameter|GetParameters|GetParametersByPath|GetParameterHistory|DescribeParameters)/,
+  );
+}
+
+test("limits SST bootstrap parameter access to one read action and ARN", () => {
+  assertSingleParameterRead(
+    policySource(
+      "sstBootstrapParameterReadPolicy",
+      "BeatSstBootstrapParameterRead",
+    ),
+    "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap",
+  );
+});
+
+test("limits API passphrase access to one read action and ARN", () => {
+  assertSingleParameterRead(
+    policySource(
+      "apiPassphraseParameterReadPolicy",
+      "BeatApiPassphraseParameterRead",
+    ),
+    "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production",
   );
 });
