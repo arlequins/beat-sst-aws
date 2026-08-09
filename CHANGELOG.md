@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/arlequins/beat-sst-aws/compare/v0.3.3...v0.3.4) (2026-08-09)
+
+
+### Bug Fixes
+
+* grant SST state backend access ([#12](https://github.com/arlequins/beat-sst-aws/issues/12)) ([e664def](https://github.com/arlequins/beat-sst-aws/commit/e664def68634d052eaa7e5424b0a6bd196f38c9c))
+
 ## [0.3.3](https://github.com/arlequins/beat-sst-aws/compare/v0.3.2...v0.3.3) (2026-08-09)
 
 
