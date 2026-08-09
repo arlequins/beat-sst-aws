@@ -67,16 +67,17 @@ stack continues to own every resource created through this policy.
 
 The policy permits:
 
-- read/write, upload tagging, and multipart cleanup in the exact SST asset
-  bucket `sst-asset-euxnnsccdfbs`; upload tagging is object-scoped and grants
-  neither `GetObjectTagging` nor `DeleteObjectTagging`;
+- read/write, upload tag reconciliation, and multipart cleanup in the exact SST
+  asset bucket `sst-asset-euxnnsccdfbs`; `GetObjectTagging` and
+  `PutObjectTagging` are object-scoped, and `DeleteObjectTagging` is not granted;
 - creation and configuration of only `api-production-*` private buckets,
   including public-access blocking, versioning, AES256 encryption, ownership,
   the HTTPS-only bucket policy, CORS, lifecycle, tags, and the reviewed auth
   ledger's Object Lock configuration. Bucket-level `s3:ListBucket` lets the S3
   provider verify that a newly created bucket exists, while
-  `s3:GetAccelerateConfiguration`, `s3:GetBucketAcl`, and `s3:GetBucketWebsite`
-  let it reconcile acceleration, ACL, and website configuration. None of these
+  `s3:GetAccelerateConfiguration`, `s3:GetBucketAcl`,
+  `s3:GetBucketRequestPayment`, and `s3:GetBucketWebsite` let it reconcile
+  acceleration, ACL, request-payment, and website configuration. None of these
   actions grants object read or write access;
 - creation and in-place maintenance of only `api-production-*` runtime roles,
   including inline policies and the Lambda basic-execution managed-policy
