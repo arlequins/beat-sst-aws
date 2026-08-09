@@ -93,6 +93,21 @@ export default $config({
       role: deployRole.name,
       policy: sstBootstrapParameterReadPolicy.json,
     });
+    const apiPassphraseParameterReadPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: ["ssm:GetParameter"],
+          resources: [
+            "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production",
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatApiPassphraseParameterRead", {
+      role: deployRole.name,
+      policy: apiPassphraseParameterReadPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),
