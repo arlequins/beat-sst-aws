@@ -105,6 +105,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
 
   for (const action of [
     "s3:CreateBucket",
+    "s3:ListBucket",
     "s3:PutBucketPublicAccessBlock",
     "s3:PutBucketVersioning",
     "s3:PutEncryptionConfiguration",
@@ -141,6 +142,10 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   assert.match(
     policy,
     /actions: \["iam:AttachRolePolicy", "iam:DetachRolePolicy"\],[\s\S]*?variable: "iam:PolicyARN",[\s\S]*?arn:aws:iam::aws:policy\/service-role\/AWSLambdaBasicExecutionRole/,
+  );
+  assert.match(
+    policy,
+    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
   );
 });
 

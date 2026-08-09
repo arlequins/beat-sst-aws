@@ -70,7 +70,9 @@ The policy permits:
 - creation and configuration of only `api-production-*` private buckets,
   including public-access blocking, versioning, AES256 encryption, ownership,
   the HTTPS-only bucket policy, CORS, lifecycle, tags, and the reviewed auth
-  ledger's Object Lock configuration;
+  ledger's Object Lock configuration. Bucket-level `s3:ListBucket` lets the S3
+  provider verify that a newly created bucket exists without granting object
+  read or write access;
 - creation and in-place maintenance of only `api-production-*` runtime roles,
   including inline policies and the Lambda basic-execution managed-policy
   attachment required by SST logging. The attachment actions have an additional
