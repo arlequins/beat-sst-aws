@@ -23,7 +23,7 @@ Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
 its generated bucket names into the API and retains them in production.
 
-The generated GitHub role contains the narrow OIDC trust policy and four separate
+The generated GitHub role contains the narrow OIDC trust policy and five separate
 inline identity policies:
 
 - `secretsmanager:GetSecretValue` for this bootstrap's emitted runtime-secret
@@ -36,7 +36,11 @@ inline identity policies:
   only, allowing SST to initialize the missing passphrase once; and
 - state backend bucket metadata/list access on
   `arn:aws:s3:::sst-state-euxnnsccdfbs`, plus state object read/write/delete
-  access on `arn:aws:s3:::sst-state-euxnnsccdfbs/*`.
+  access on `arn:aws:s3:::sst-state-euxnnsccdfbs/*`; and
+- a reviewed API-production deployment policy limited to the exact SST asset
+  bucket and `api-production-*` S3 buckets, runtime roles, Lambda functions,
+  reconciliation schedule, Lambda log groups, alarms, and the
+  `api-production` dashboard.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
@@ -53,13 +57,47 @@ granting `DeleteObjectVersion`, bucket creation/deletion, bucket policy changes,
 or an `sst-*` bucket wildcard. Beat application buckets remain application-owned
 and are not covered by this state-backend policy.
 
-This bootstrap deliberately does **not** grant broad SST or Beat application
-deployment permissions. The Beat application must derive a separate reviewed
-policy from its GitHub Actions `sst diff` plan, scoped to its state and asset
-resources, CloudFormation stacks, IAM roles, and application resources. Do not
-attach `AdministratorAccess`, wildcard Secrets Manager permissions, or a
-long-lived access key to this role. Account-wide controls remain owned here;
-application-resource permissions remain owned by `arlequins/beat`.
+### Reviewed API production deployment boundary
+
+`BeatApiProductionDeployment` is derived only from the protected Beat API diff
+run `31338437044`. The baseline owns the deployment identity, but the Beat API
+stack continues to own every resource created through this policy.
+
+The policy permits:
+
+- read/write and multipart cleanup in the exact SST asset bucket
+  `sst-asset-euxnnsccdfbs`;
+- creation and configuration of only `api-production-*` private buckets,
+  including public-access blocking, versioning, AES256 encryption, ownership,
+  the HTTPS-only bucket policy, CORS, lifecycle, tags, and the reviewed auth
+  ledger's Object Lock configuration;
+- creation and in-place maintenance of only `api-production-*` runtime roles,
+  including inline policies and the Lambda basic-execution managed-policy
+  attachment required by SST logging. The attachment actions have an additional
+  `iam:PolicyARN` condition that permits only
+  `AWSLambdaBasicExecutionRole`. `iam:PassRole` is restricted further to Lambda
+  and EventBridge Scheduler;
+- creation and in-place maintenance of only `api-production-*` Lambda
+  functions, Function URLs and Lambda permissions, the default-group
+  reconciliation schedule, and `/aws/lambda/api-production-*` log groups;
+- creation and in-place maintenance of only `api-production-*` alarms and the
+  exact `api-production` dashboard.
+
+The only all-resources entry is `logs:DescribeLogGroups`, an AWS API that does
+not support resource-level authorization; it is restricted to `ap-northeast-1`.
+Every mutating action uses an API-production ARN or the exact SST asset ARN.
+The reviewed plan contains no S3 bucket objects and no standalone
+`aws:iam:Policy`, so this policy grants no application-bucket object data access
+and no `policy/api-production-*` managed-policy CRUD. A future diff that adds
+either must be reviewed before this boundary changes.
+
+The policy excludes `DeleteBucket`, `DeleteObjectVersion`, runtime-role deletion,
+Lambda/schedule/log/alarm/dashboard deletion, CloudFront, web, batch, RDS, EC2,
+OIDC-provider changes, modification of the production deployment role,
+account-baseline controls, wildcard Secrets Manager access,
+`AdministratorAccess`, and long-lived access keys. Production resources remain
+retained; changing this policy does not transfer their ownership to the
+bootstrap repository.
 
 ## One-time runtime secret initialization
 
