@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/arlequins/beat-sst-aws/compare/v0.3.1...v0.3.2) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow reading API passphrase metadata ([#8](https://github.com/arlequins/beat-sst-aws/issues/8)) ([99a48e2](https://github.com/arlequins/beat-sst-aws/commit/99a48e211a5e652c1bce8c1c45a7cda59e0c6da1))
+
 ## [0.3.1](https://github.com/arlequins/beat-sst-aws/compare/v0.3.0...v0.3.1) (2026-08-09)
 
 
