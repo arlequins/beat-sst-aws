@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/arlequins/beat-sst-aws/compare/v0.2.0...v0.2.1) (2026-08-09)
+
+
+### Bug Fixes
+
+* grant deployment role runtime secret access ([#2](https://github.com/arlequins/beat-sst-aws/issues/2)) ([5bf334a](https://github.com/arlequins/beat-sst-aws/commit/5bf334a9ea51c2e7b6d50c0294f67032f3f7e662))
+
 ## [0.2.0](https://github.com/arlequins/beat-sst-aws/compare/v0.1.0...v0.2.0) (2026-08-08)
 
 
