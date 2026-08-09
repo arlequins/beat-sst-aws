@@ -108,6 +108,33 @@ export default $config({
       role: deployRole.name,
       policy: apiPassphraseParameterReadPolicy.json,
     });
+    const sstStateBackendAccessPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: [
+            "s3:GetBucketLocation",
+            "s3:ListBucket",
+            "s3:ListBucketVersions",
+          ],
+          resources: ["arn:aws:s3:::sst-state-euxnnsccdfbs"],
+        },
+        {
+          effect: "Allow",
+          actions: [
+            "s3:GetObject",
+            "s3:GetObjectVersion",
+            "s3:PutObject",
+            "s3:DeleteObject",
+          ],
+          resources: ["arn:aws:s3:::sst-state-euxnnsccdfbs/*"],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatSstStateBackendAccess", {
+      role: deployRole.name,
+      policy: sstStateBackendAccessPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),
