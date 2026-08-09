@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/arlequins/beat-sst-aws/compare/v0.3.4...v0.3.5) (2026-08-09)
+
+
+### Bug Fixes
+
+* grant reviewed API production deployment ([#14](https://github.com/arlequins/beat-sst-aws/issues/14)) ([ba8a006](https://github.com/arlequins/beat-sst-aws/commit/ba8a0066913f95f01be97e6eb5d2066052365e95))
+
 ## [0.3.4](https://github.com/arlequins/beat-sst-aws/compare/v0.3.3...v0.3.4) (2026-08-09)
 
 
