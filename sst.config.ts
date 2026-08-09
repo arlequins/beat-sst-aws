@@ -135,6 +135,209 @@ export default $config({
       role: deployRole.name,
       policy: sstStateBackendAccessPolicy.json,
     });
+    const apiProductionDeploymentPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          sid: "ManageExactSstAssetBucket",
+          effect: "Allow",
+          actions: [
+            "s3:GetBucketLocation",
+            "s3:ListBucket",
+            "s3:ListBucketMultipartUploads",
+          ],
+          resources: ["arn:aws:s3:::sst-asset-euxnnsccdfbs"],
+        },
+        {
+          sid: "ManageExactSstAssetObjects",
+          effect: "Allow",
+          actions: [
+            "s3:AbortMultipartUpload",
+            "s3:DeleteObject",
+            "s3:GetObject",
+            "s3:ListMultipartUploadParts",
+            "s3:PutObject",
+          ],
+          resources: ["arn:aws:s3:::sst-asset-euxnnsccdfbs/*"],
+        },
+        {
+          sid: "ConfigureApiProductionBuckets",
+          effect: "Allow",
+          actions: [
+            "s3:CreateBucket",
+            "s3:GetBucketCORS",
+            "s3:GetBucketLocation",
+            "s3:GetBucketObjectLockConfiguration",
+            "s3:GetBucketOwnershipControls",
+            "s3:GetBucketPolicy",
+            "s3:GetBucketPolicyStatus",
+            "s3:GetBucketPublicAccessBlock",
+            "s3:GetBucketTagging",
+            "s3:GetBucketVersioning",
+            "s3:GetEncryptionConfiguration",
+            "s3:GetLifecycleConfiguration",
+            "s3:PutBucketCORS",
+            "s3:PutBucketObjectLockConfiguration",
+            "s3:PutBucketOwnershipControls",
+            "s3:PutBucketPolicy",
+            "s3:PutBucketPublicAccessBlock",
+            "s3:PutBucketTagging",
+            "s3:PutBucketVersioning",
+            "s3:PutEncryptionConfiguration",
+            "s3:PutLifecycleConfiguration",
+          ],
+          resources: ["arn:aws:s3:::api-production-*"],
+        },
+        {
+          sid: "ManageApiProductionRuntimeRoles",
+          effect: "Allow",
+          actions: [
+            "iam:CreateRole",
+            "iam:DeleteRolePolicy",
+            "iam:GetRole",
+            "iam:GetRolePolicy",
+            "iam:ListAttachedRolePolicies",
+            "iam:ListRolePolicies",
+            "iam:ListRoleTags",
+            "iam:PutRolePolicy",
+            "iam:TagRole",
+            "iam:UntagRole",
+            "iam:UpdateAssumeRolePolicy",
+            "iam:UpdateRole",
+          ],
+          resources: [
+            "arn:aws:iam::205480711070:role/api-production-*",
+          ],
+        },
+        {
+          sid: "ManageApiProductionLambdaLoggingPolicyAttachment",
+          effect: "Allow",
+          actions: ["iam:AttachRolePolicy", "iam:DetachRolePolicy"],
+          resources: [
+            "arn:aws:iam::205480711070:role/api-production-*",
+          ],
+          conditions: [
+            {
+              test: "ArnEquals",
+              variable: "iam:PolicyARN",
+              values: [
+                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            },
+          ],
+        },
+        {
+          sid: "PassApiProductionRuntimeRolesToExpectedServices",
+          effect: "Allow",
+          actions: ["iam:PassRole"],
+          resources: [
+            "arn:aws:iam::205480711070:role/api-production-*",
+          ],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "iam:PassedToService",
+              values: ["lambda.amazonaws.com", "scheduler.amazonaws.com"],
+            },
+          ],
+        },
+        {
+          sid: "ManageApiProductionFunctions",
+          effect: "Allow",
+          actions: [
+            "lambda:AddPermission",
+            "lambda:CreateFunction",
+            "lambda:CreateFunctionUrlConfig",
+            "lambda:GetFunction",
+            "lambda:GetFunctionConfiguration",
+            "lambda:GetFunctionUrlConfig",
+            "lambda:GetPolicy",
+            "lambda:ListTags",
+            "lambda:RemovePermission",
+            "lambda:TagResource",
+            "lambda:UntagResource",
+            "lambda:UpdateFunctionCode",
+            "lambda:UpdateFunctionConfiguration",
+            "lambda:UpdateFunctionUrlConfig",
+          ],
+          resources: [
+            "arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-*",
+          ],
+        },
+        {
+          sid: "ManageApiProductionReconciliationSchedule",
+          effect: "Allow",
+          actions: [
+            "scheduler:CreateSchedule",
+            "scheduler:GetSchedule",
+            "scheduler:UpdateSchedule",
+          ],
+          resources: [
+            "arn:aws:scheduler:ap-northeast-1:205480711070:schedule/default/api-production-*",
+          ],
+        },
+        {
+          sid: "ManageApiProductionLogGroups",
+          effect: "Allow",
+          actions: [
+            "logs:CreateLogGroup",
+            "logs:DescribeLogStreams",
+            "logs:ListTagsForResource",
+            "logs:PutRetentionPolicy",
+            "logs:TagResource",
+            "logs:UntagResource",
+          ],
+          resources: [
+            "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/api-production-*",
+          ],
+        },
+        {
+          sid: "DiscoverRegionalLogGroups",
+          effect: "Allow",
+          actions: ["logs:DescribeLogGroups"],
+          resources: ["*"],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:RequestedRegion",
+              values: ["ap-northeast-1"],
+            },
+          ],
+        },
+        {
+          sid: "ManageApiProductionAlarms",
+          effect: "Allow",
+          actions: [
+            "cloudwatch:DescribeAlarmHistory",
+            "cloudwatch:DescribeAlarms",
+            "cloudwatch:ListTagsForResource",
+            "cloudwatch:PutMetricAlarm",
+            "cloudwatch:TagResource",
+            "cloudwatch:UntagResource",
+          ],
+          resources: [
+            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-*",
+          ],
+        },
+        {
+          sid: "ManageExactApiProductionDashboard",
+          effect: "Allow",
+          actions: [
+            "cloudwatch:GetDashboard",
+            "cloudwatch:ListTagsForResource",
+            "cloudwatch:PutDashboard",
+            "cloudwatch:TagResource",
+            "cloudwatch:UntagResource",
+          ],
+          resources: [
+            "arn:aws:cloudwatch::205480711070:dashboard/api-production",
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatApiProductionDeployment", {
+      role: deployRole.name,
+      policy: apiProductionDeploymentPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),

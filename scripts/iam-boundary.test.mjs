@@ -82,3 +82,88 @@ test("splits SST state bucket and object access across exact ARNs", () => {
     /s3:(DeleteObjectVersion|CreateBucket|DeleteBucket|PutBucketPolicy|DeleteBucketPolicy)/,
   );
 });
+
+test("limits API production deployment to the reviewed service and ARN set", () => {
+  const policy = policySource(
+    "apiProductionDeploymentPolicy",
+    "BeatApiProductionDeployment",
+  );
+
+  for (const arn of [
+    "arn:aws:s3:::sst-asset-euxnnsccdfbs",
+    "arn:aws:s3:::sst-asset-euxnnsccdfbs/*",
+    "arn:aws:s3:::api-production-*",
+    "arn:aws:iam::205480711070:role/api-production-*",
+    "arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-*",
+    "arn:aws:scheduler:ap-northeast-1:205480711070:schedule/default/api-production-*",
+    "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/api-production-*",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-*",
+    "arn:aws:cloudwatch::205480711070:dashboard/api-production",
+  ]) {
+    assert.ok(policy.includes(arn), `missing reviewed ARN: ${arn}`);
+  }
+
+  for (const action of [
+    "s3:CreateBucket",
+    "s3:PutBucketPublicAccessBlock",
+    "s3:PutBucketVersioning",
+    "s3:PutEncryptionConfiguration",
+    "s3:PutBucketOwnershipControls",
+    "s3:PutBucketPolicy",
+    "s3:PutBucketCORS",
+    "s3:PutLifecycleConfiguration",
+    "s3:PutBucketTagging",
+    "iam:AttachRolePolicy",
+    "iam:CreateRole",
+    "iam:DetachRolePolicy",
+    "iam:PutRolePolicy",
+    "iam:PassRole",
+    "lambda:CreateFunction",
+    "lambda:CreateFunctionUrlConfig",
+    "lambda:AddPermission",
+    "scheduler:CreateSchedule",
+    "logs:CreateLogGroup",
+    "logs:PutRetentionPolicy",
+    "cloudwatch:PutMetricAlarm",
+    "cloudwatch:PutDashboard",
+  ]) {
+    assert.ok(policy.includes(`"${action}"`), `missing action: ${action}`);
+  }
+
+  assert.match(
+    policy,
+    /actions: \["logs:DescribeLogGroups"\],[\s\S]*?resources: \["\*"\],[\s\S]*?variable: "aws:RequestedRegion",[\s\S]*?values: \["ap-northeast-1"\]/,
+  );
+  assert.match(
+    policy,
+    /actions: \["iam:PassRole"\],[\s\S]*?iam:PassedToService[\s\S]*?lambda\.amazonaws\.com[\s\S]*?scheduler\.amazonaws\.com/,
+  );
+  assert.match(
+    policy,
+    /actions: \["iam:AttachRolePolicy", "iam:DetachRolePolicy"\],[\s\S]*?variable: "iam:PolicyARN",[\s\S]*?arn:aws:iam::aws:policy\/service-role\/AWSLambdaBasicExecutionRole/,
+  );
+});
+
+test("rejects broad or destructive API production deployment permissions", () => {
+  const policy = policySource(
+    "apiProductionDeploymentPolicy",
+    "BeatApiProductionDeployment",
+  );
+
+  assert.equal((policy.match(/resources: \["\*"\]/g) ?? []).length, 1);
+  assert.doesNotMatch(policy, /[a-z]+:\*/);
+  assert.doesNotMatch(policy, /arn:aws:secretsmanager:/);
+  assert.doesNotMatch(policy, /arn:aws:iam::205480711070:role\/beat-github-/);
+  assert.doesNotMatch(policy, /arn:aws:iam::205480711070:oidc-provider\//);
+  assert.doesNotMatch(policy, /arn:aws:iam::205480711070:policy\/api-production-/);
+  assert.doesNotMatch(policy, /arn:aws:s3:::api-production-\*\/\*/);
+  assert.doesNotMatch(
+    policy,
+    /(cloudfront|apigateway|rds|ec2|states|events):/,
+  );
+  assert.doesNotMatch(
+    policy,
+    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|scheduler:DeleteSchedule|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
+  );
+  assert.doesNotMatch(policy, /AdministratorAccess/);
+});
