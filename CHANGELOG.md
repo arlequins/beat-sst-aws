@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/arlequins/beat-sst-aws/compare/v0.3.5...v0.3.6) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow API bucket existence checks ([#16](https://github.com/arlequins/beat-sst-aws/issues/16)) ([bfba391](https://github.com/arlequins/beat-sst-aws/commit/bfba39142092f182ebc77fc4e8d87577c8282d68))
+
 ## [0.3.5](https://github.com/arlequins/beat-sst-aws/compare/v0.3.4...v0.3.5) (2026-08-09)
 
 
