@@ -105,6 +105,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
 
   for (const action of [
     "s3:CreateBucket",
+    "s3:GetBucketAcl",
     "s3:ListBucket",
     "s3:PutBucketPublicAccessBlock",
     "s3:PutBucketVersioning",
@@ -145,8 +146,26 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
   assert.match(
     policy,
-    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
+    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:GetBucketAcl"[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
   );
+});
+
+test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {
+  assert.match(
+    source,
+    /new aws\.iam\.ServiceLinkedRole\("CloudWatchAlarmEventsServiceLinkedRole", \{[\s\S]*?awsServiceName: "events\.amazonaws\.com"/,
+  );
+  assert.match(
+    source,
+    /cloudWatchAlarmEventsServiceLinkedRoleArn:[\s\S]*?cloudWatchAlarmEventsServiceLinkedRole\.arn/,
+  );
+
+  const policy = policySource(
+    "apiProductionDeploymentPolicy",
+    "BeatApiProductionDeployment",
+  );
+  assert.doesNotMatch(policy, /iam:CreateServiceLinkedRole/);
+  assert.doesNotMatch(source, /AWSServiceRoleForCloudWatchAlarms_ActionSSM/);
 });
 
 test("rejects broad or destructive API production deployment permissions", () => {
@@ -171,4 +190,5 @@ test("rejects broad or destructive API production deployment permissions", () =>
     /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|scheduler:DeleteSchedule|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
   );
   assert.doesNotMatch(policy, /AdministratorAccess/);
+  assert.doesNotMatch(policy, /iam:CreateServiceLinkedRole/);
 });

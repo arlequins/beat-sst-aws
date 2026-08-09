@@ -15,6 +15,8 @@ resources:
 - EBS encryption and the IAM password policy;
 - optional account CloudTrail;
 - Access Analyzer;
+- the CloudWatch Events service-linked role required when an account creates
+  its first CloudWatch alarm;
 - GitHub OIDC trust and the Beat production deployment role;
 - the empty Beat runtime secret container.
 
@@ -71,8 +73,9 @@ The policy permits:
   including public-access blocking, versioning, AES256 encryption, ownership,
   the HTTPS-only bucket policy, CORS, lifecycle, tags, and the reviewed auth
   ledger's Object Lock configuration. Bucket-level `s3:ListBucket` lets the S3
-  provider verify that a newly created bucket exists without granting object
-  read or write access;
+  provider verify that a newly created bucket exists, while `s3:GetBucketAcl`
+  lets it read the bucket ACL during reconciliation. Neither action grants
+  object read or write access;
 - creation and in-place maintenance of only `api-production-*` runtime roles,
   including inline policies and the Lambda basic-execution managed-policy
   attachment required by SST logging. The attachment actions have an additional
@@ -84,6 +87,14 @@ The policy permits:
   reconciliation schedule, and `/aws/lambda/api-production-*` log groups;
 - creation and in-place maintenance of only `api-production-*` alarms and the
   exact `api-production` dashboard.
+
+The account baseline creates the standard
+`AWSServiceRoleForCloudWatchEvents` service-linked role through the exact
+`events.amazonaws.com` service name before Beat creates its first alarm. This
+keeps `iam:CreateServiceLinkedRole` out of the Beat production deployment role
+and leaves the existing `api-production-*` alarm ARN boundary unchanged. The
+reviewed Beat alarms do not use SSM OpsItem or response-plan actions, so this
+baseline does not create `AWSServiceRoleForCloudWatchAlarms_ActionSSM`.
 
 The only all-resources entry is `logs:DescribeLogGroups`, an AWS API that does
 not support resource-level authorization; it is restricted to `ap-northeast-1`.
