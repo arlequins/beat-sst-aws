@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/arlequins/beat-sst-aws/compare/v0.2.1...v0.3.0) (2026-08-09)
+
+
+### Features
+
+* initialize runtime secret through OIDC ([#4](https://github.com/arlequins/beat-sst-aws/issues/4)) ([c229357](https://github.com/arlequins/beat-sst-aws/commit/c229357d7e1318c30bb7cb2aa2e30a125d7225e6))
+
 ## [0.2.1](https://github.com/arlequins/beat-sst-aws/compare/v0.2.0...v0.2.1) (2026-08-09)
 
 
