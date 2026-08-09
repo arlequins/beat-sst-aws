@@ -78,6 +78,21 @@ export default $config({
       role: deployRole.name,
       policy: runtimeSecretReadPolicy.json,
     });
+    const sstBootstrapParameterReadPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: ["ssm:GetParameter"],
+          resources: [
+            "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap",
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatSstBootstrapParameterRead", {
+      role: deployRole.name,
+      policy: sstBootstrapParameterReadPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),

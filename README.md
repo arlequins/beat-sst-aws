@@ -23,11 +23,18 @@ Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
 its generated bucket names into the API and retains them in production.
 
-The generated GitHub role contains the narrow OIDC trust policy and one inline
-identity policy: `secretsmanager:GetSecretValue` for this bootstrap's emitted
-runtime-secret ARN only. The secret retains the matching resource policy. Both
-halves are required for the production role to read that secret; neither grants
-access to other Secrets Manager secrets. The default Secrets Manager encryption
+The generated GitHub role contains the narrow OIDC trust policy and two separate
+inline identity policies:
+
+- `secretsmanager:GetSecretValue` for this bootstrap's emitted runtime-secret
+  ARN only; and
+- `ssm:GetParameter` for the exact regional SST bootstrap parameter
+  `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap` only.
+
+The secret retains the matching resource policy. Both secret policies are
+required for the production role to read that secret. The SSM permission reads
+only SST's control-plane bootstrap metadata; it grants no parameter wildcard,
+history, enumeration, or write action. The default Secrets Manager encryption
 key does not require a separate `kms:Decrypt` grant. If a customer-managed key
 is introduced, review and add a key-scoped decrypt grant separately.
 
