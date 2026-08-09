@@ -30,16 +30,19 @@ inline identity policies:
   ARN only; and
 - `ssm:GetParameter` for the exact regional SST bootstrap parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap` only; and
-- `ssm:GetParameter` for the exact API production SST passphrase parameter
+- `ssm:GetParameter` and `ssm:PutParameter` for the exact API production SST
+  passphrase parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production`
-  only.
+  only, allowing SST to initialize the missing passphrase once.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
-only the named SST control-plane parameters; they grant no parameter wildcard,
-history, enumeration, or write action. The default Secrets Manager encryption
-key does not require a separate `kms:Decrypt` grant. If a customer-managed key
-is introduced, review and add a key-scoped decrypt grant separately.
+only the named SST control-plane parameters. The sole write action is
+`PutParameter` for the exact API production passphrase ARN; they grant no
+parameter wildcard, deletion, path access, history, or enumeration action. The
+default Secrets Manager encryption key does not require a separate `kms:Decrypt`
+grant. If a customer-managed key is introduced, review and add a key-scoped
+decrypt grant separately.
 
 This bootstrap deliberately does **not** grant broad SST or Beat application
 deployment permissions. The Beat application must derive a separate reviewed
