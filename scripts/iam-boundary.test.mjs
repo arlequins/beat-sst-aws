@@ -107,9 +107,11 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "s3:CreateBucket",
     "s3:GetAccelerateConfiguration",
     "s3:GetBucketAcl",
+    "s3:GetBucketLogging",
     "s3:GetBucketRequestPayment",
     "s3:GetBucketWebsite",
     "s3:GetObjectTagging",
+    "s3:GetReplicationConfiguration",
     "s3:ListBucket",
     "s3:PutBucketPublicAccessBlock",
     "s3:PutBucketVersioning",
@@ -151,7 +153,9 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
   assert.match(
     policy,
-    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:GetAccelerateConfiguration"[\s\S]*?"s3:GetBucketAcl"[\s\S]*?"s3:GetBucketRequestPayment"[\s\S]*?"s3:GetBucketWebsite"[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
+    // Pulumi AWS v7.20.0 pins upstream ea6e951e. Its monolithic Bucket read
+    // calls logging and then replication even when neither is configured.
+    /sid: "ConfigureApiProductionBuckets",[\s\S]*?"s3:GetAccelerateConfiguration"[\s\S]*?"s3:GetBucketAcl"[\s\S]*?"s3:GetBucketLogging"[\s\S]*?"s3:GetBucketRequestPayment"[\s\S]*?"s3:GetBucketWebsite"[\s\S]*?"s3:GetReplicationConfiguration"[\s\S]*?"s3:ListBucket"[\s\S]*?resources: \["arn:aws:s3:::api-production-\*"\]/,
   );
   assert.match(
     policy,
@@ -201,4 +205,8 @@ test("rejects broad or destructive API production deployment permissions", () =>
   assert.doesNotMatch(policy, /AdministratorAccess/);
   assert.doesNotMatch(policy, /iam:CreateServiceLinkedRole/);
   assert.doesNotMatch(policy, /s3:DeleteObjectTagging/);
+  assert.doesNotMatch(
+    policy,
+    /s3:(?:Put|Delete)ReplicationConfiguration/,
+  );
 });
