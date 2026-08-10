@@ -76,9 +76,10 @@ The policy permits:
   ledger's Object Lock configuration. Bucket-level `s3:ListBucket` lets the S3
   provider verify that a newly created bucket exists, while
   `s3:GetAccelerateConfiguration`, `s3:GetBucketAcl`,
-  `s3:GetBucketRequestPayment`, and `s3:GetBucketWebsite` let it reconcile
-  acceleration, ACL, request-payment, and website configuration. None of these
-  actions grants object read or write access;
+  `s3:GetBucketLogging`, `s3:GetBucketRequestPayment`,
+  `s3:GetBucketWebsite`, and `s3:GetReplicationConfiguration` let it reconcile
+  acceleration, ACL, logging, request-payment, website, and replication
+  configuration. None of these actions grants object read or write access;
 - creation and in-place maintenance of only `api-production-*` runtime roles,
   including inline policies and the Lambda basic-execution managed-policy
   attachment required by SST logging. The attachment actions have an additional
@@ -90,6 +91,20 @@ The policy permits:
   reconciliation schedule, and `/aws/lambda/api-production-*` log groups;
 - creation and in-place maintenance of only `api-production-*` alarms and the
   exact `api-production` dashboard.
+
+The bucket read boundary follows the provider code rather than anticipated
+behavior. Pulumi AWS
+[`v7.20.0`](https://github.com/pulumi/pulumi-aws/tree/v7.20.0) pins Terraform AWS
+provider commit
+[`ea6e951e`](https://github.com/hashicorp/terraform-provider-aws/tree/ea6e951e24066a24891c63a37a3b95f9971d16b8).
+Its monolithic
+[`resourceBucketRead`](https://github.com/hashicorp/terraform-provider-aws/blob/ea6e951e24066a24891c63a37a3b95f9971d16b8/internal/service/s3/bucket.go#L1018-L1094)
+always reads logging and then replication configuration, even when neither is
+configured. The replication helper calls
+[`GetBucketReplication`](https://github.com/hashicorp/terraform-provider-aws/blob/ea6e951e24066a24891c63a37a3b95f9971d16b8/internal/service/s3/bucket_replication_configuration.go#L470-L488),
+which AWS maps to
+[`s3:GetReplicationConfiguration`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html).
+No replication write or delete action is granted.
 
 The account baseline creates the standard
 `AWSServiceRoleForCloudWatchEvents` service-linked role through the exact
