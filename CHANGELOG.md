@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.12](https://github.com/arlequins/beat-sst-aws/compare/v0.3.11...v0.3.12) (2026-08-10)
+
+
+### Bug Fixes
+
+* allow reviewed Lambda version reads ([#28](https://github.com/arlequins/beat-sst-aws/issues/28)) ([6be81bc](https://github.com/arlequins/beat-sst-aws/commit/6be81bcb1aa14b0d2bf80a990b29bbfd2edd24f2))
+
 ## [0.3.11](https://github.com/arlequins/beat-sst-aws/compare/v0.3.10...v0.3.11) (2026-08-10)
 
 
