@@ -130,6 +130,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "lambda:CreateFunction",
     "lambda:CreateFunctionUrlConfig",
     "lambda:AddPermission",
+    "lambda:GetFunctionCodeSigningConfig",
     "lambda:ListVersionsByFunction",
     "scheduler:CreateSchedule",
     "logs:CreateLogGroup",
@@ -164,7 +165,13 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
   assert.match(
     policy,
+    // Pulumi AWS v7.20.0 pins upstream ea6e951e. Its Lambda read calls
+    // GetFunctionCodeSigningConfig for zip functions regardless of configuration.
     /sid: "ManageApiProductionFunctions",[\s\S]*?"lambda:ListVersionsByFunction"[\s\S]*?resources: \[[\s\S]*?"arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-\*"[\s\S]*?\]/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageApiProductionFunctions",[\s\S]*?"lambda:GetFunctionCodeSigningConfig"[\s\S]*?resources: \[[\s\S]*?"arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-\*"[\s\S]*?\]/,
   );
 });
 
@@ -213,5 +220,9 @@ test("rejects broad or destructive API production deployment permissions", () =>
   assert.doesNotMatch(
     policy,
     /s3:(?:Put|Delete)ReplicationConfiguration/,
+  );
+  assert.doesNotMatch(
+    policy,
+    /lambda:(?:GetFunctionConcurrency|GetRuntimeManagementConfig)/,
   );
 });

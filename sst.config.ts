@@ -263,6 +263,7 @@ export default $config({
             "lambda:CreateFunction",
             "lambda:CreateFunctionUrlConfig",
             "lambda:GetFunction",
+            "lambda:GetFunctionCodeSigningConfig",
             "lambda:GetFunctionConfiguration",
             "lambda:GetFunctionUrlConfig",
             "lambda:GetPolicy",

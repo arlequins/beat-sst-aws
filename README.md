@@ -86,9 +86,9 @@ The policy permits:
   `iam:PolicyARN` condition that permits only
   `AWSLambdaBasicExecutionRole`. `iam:PassRole` is restricted further to Lambda
   and EventBridge Scheduler;
-- creation, read-only version enumeration, and in-place maintenance of only
-  `api-production-*` Lambda functions, Function URLs and Lambda permissions,
-  the default-group reconciliation schedule, and
+- creation, read-only version and code-signing configuration enumeration, and
+  in-place maintenance of only `api-production-*` Lambda functions, Function
+  URLs and Lambda permissions, the default-group reconciliation schedule, and
   `/aws/lambda/api-production-*` log groups;
 - creation and in-place maintenance of only `api-production-*` alarms and the
   exact `api-production` dashboard.
@@ -106,6 +106,16 @@ configured. The replication helper calls
 which AWS maps to
 [`s3:GetReplicationConfiguration`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html).
 No replication write or delete action is granted.
+
+The same pinned provider's
+[`resourceFunctionRead`](https://github.com/hashicorp/terraform-provider-aws/blob/ea6e951e24066a24891c63a37a3b95f9971d16b8/internal/service/lambda/function.go#L770-L954)
+lists published versions and, for zip functions in supported partitions,
+unconditionally reads the code-signing configuration regardless of whether a
+code-signing configuration is set. The policy therefore grants
+`lambda:GetFunctionCodeSigningConfig` only on the exact `api-production-*`
+function ARN. That read path does not call `GetRuntimeManagementConfig`, and
+`GetFunctionConcurrency` is conditional on a qualifier, so neither speculative
+permission is granted.
 
 The account baseline creates the standard
 `AWSServiceRoleForCloudWatchEvents` service-linked role through the exact
