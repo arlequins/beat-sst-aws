@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.11](https://github.com/arlequins/beat-sst-aws/compare/v0.3.10...v0.3.11) (2026-08-10)
+
+
+### Bug Fixes
+
+* allow reviewed S3 bucket read path ([#26](https://github.com/arlequins/beat-sst-aws/issues/26)) ([5fa8494](https://github.com/arlequins/beat-sst-aws/commit/5fa849489db61db6751b811c168475aeea310d23))
+
 ## [0.3.10](https://github.com/arlequins/beat-sst-aws/compare/v0.3.9...v0.3.10) (2026-08-09)
 
 
