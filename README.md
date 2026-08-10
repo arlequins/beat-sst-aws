@@ -86,9 +86,10 @@ The policy permits:
   `iam:PolicyARN` condition that permits only
   `AWSLambdaBasicExecutionRole`. `iam:PassRole` is restricted further to Lambda
   and EventBridge Scheduler;
-- creation and in-place maintenance of only `api-production-*` Lambda
-  functions, Function URLs and Lambda permissions, the default-group
-  reconciliation schedule, and `/aws/lambda/api-production-*` log groups;
+- creation, read-only version enumeration, and in-place maintenance of only
+  `api-production-*` Lambda functions, Function URLs and Lambda permissions,
+  the default-group reconciliation schedule, and
+  `/aws/lambda/api-production-*` log groups;
 - creation and in-place maintenance of only `api-production-*` alarms and the
   exact `api-production` dashboard.
 

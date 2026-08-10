@@ -130,6 +130,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "lambda:CreateFunction",
     "lambda:CreateFunctionUrlConfig",
     "lambda:AddPermission",
+    "lambda:ListVersionsByFunction",
     "scheduler:CreateSchedule",
     "logs:CreateLogGroup",
     "logs:PutRetentionPolicy",
@@ -160,6 +161,10 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   assert.match(
     policy,
     /sid: "ManageExactSstAssetObjects",[\s\S]*?"s3:GetObjectTagging"[\s\S]*?"s3:PutObjectTagging"[\s\S]*?resources: \["arn:aws:s3:::sst-asset-euxnnsccdfbs\/\*"\]/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageApiProductionFunctions",[\s\S]*?"lambda:ListVersionsByFunction"[\s\S]*?resources: \[[\s\S]*?"arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-\*"[\s\S]*?\]/,
   );
 });
 

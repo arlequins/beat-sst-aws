@@ -267,6 +267,7 @@ export default $config({
             "lambda:GetFunctionUrlConfig",
             "lambda:GetPolicy",
             "lambda:ListTags",
+            "lambda:ListVersionsByFunction",
             "lambda:RemovePermission",
             "lambda:TagResource",
             "lambda:UntagResource",
