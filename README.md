@@ -50,8 +50,8 @@ inline identity policies:
 - a reviewed web-production deployment policy limited to `web-production-*`
   private asset buckets and their objects, plus SST-tagged CloudFront
   distributions, functions, and key-value stores. Its only wildcard resource
-  is the CloudFront create APIs that do not support resource-level IAM; those
-  requests must carry `sst:app=web` and `sst:stage=production` tags.
+  is the CloudFront create APIs, which do not support resource-level IAM or
+  request tags in SST's StaticSite provider; all follow-up access is scoped.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
