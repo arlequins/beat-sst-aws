@@ -202,6 +202,54 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
 });
 
+test("limits web production deployment to static-site resources", () => {
+  const policy = policySource(
+    "webProductionDeploymentPolicy",
+    "BeatWebProductionDeployment",
+  );
+
+  for (const arn of [
+    "arn:aws:s3:::web-production-*",
+    "arn:aws:s3:::web-production-*/*",
+    "arn:aws:cloudfront::205480711070:function/web-production-*",
+    "arn:aws:cloudfront::205480711070:key-value-store/web-production-*",
+    "arn:aws:cloudfront::205480711070:distribution/*",
+  ]) {
+    assert.ok(policy.includes(arn), `missing reviewed ARN: ${arn}`);
+  }
+
+  for (const action of [
+    "s3:CreateBucket",
+    "s3:PutBucketPublicAccessBlock",
+    "s3:PutBucketVersioning",
+    "s3:PutEncryptionConfiguration",
+    "s3:PutBucketOwnershipControls",
+    "s3:PutObject",
+    "s3:DeleteObject",
+    "cloudfront:CreateDistribution",
+    "cloudfront:CreateFunction",
+    "cloudfront:CreateKeyValueStore",
+    "cloudfront:UpdateDistribution",
+    "cloudfront:PublishFunction",
+    "cloudfront-keyvaluestore:UpdateKeys",
+  ]) {
+    assert.ok(policy.includes(`\"${action}\"`), `missing action: ${action}`);
+  }
+
+  assert.match(
+    policy,
+    /sid: "CreateTaggedWebProductionCloudFrontResources",[\s\S]*?resources: \["\*"\],[\s\S]*?aws:RequestTag\/sst:app[\s\S]*?values: \["web"\],[\s\S]*?aws:RequestTag\/sst:stage[\s\S]*?values: \["production"\]/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageTaggedWebProductionCloudFrontDistributions",[\s\S]*?aws:ResourceTag\/sst:app[\s\S]*?values: \["web"\],[\s\S]*?aws:ResourceTag\/sst:stage[\s\S]*?values: \["production"\]/,
+  );
+  assert.equal((policy.match(/resources: \["\*"\]/g) ?? []).length, 1);
+  assert.doesNotMatch(policy, /[a-z-]+:\*/);
+  assert.doesNotMatch(policy, /(iam|lambda|secretsmanager|apigateway|rds|ec2):/);
+  assert.doesNotMatch(policy, /arn:aws:s3:::api-production-/);
+});
+
 test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {
   assert.match(
     source,
