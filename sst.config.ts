@@ -467,7 +467,7 @@ export default $config({
             "cloudfront:UpdateKeyValueStore",
           ],
           resources: [
-            "arn:aws:cloudfront::205480711070:key-value-store/c87b6d1a-6bde-4388-afdf-02a088b15b8b",
+            "arn:aws:cloudfront::205480711070:key-value-store/*",
           ],
         },
         {
@@ -482,7 +482,7 @@ export default $config({
             "cloudfront-keyvaluestore:UpdateKeys",
           ],
           resources: [
-            "arn:aws:cloudfront::205480711070:key-value-store/c87b6d1a-6bde-4388-afdf-02a088b15b8b",
+            "arn:aws:cloudfront::205480711070:key-value-store/*",
           ],
         },
         {
