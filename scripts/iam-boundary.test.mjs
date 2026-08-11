@@ -58,6 +58,27 @@ test("limits API passphrase initialization to Get and Put on one ARN", () => {
   );
 });
 
+test("limits web passphrase initialization to Get and Put on one ARN", () => {
+  const policy = policySource(
+    "webPassphraseParameterReadPolicy",
+    "BeatWebPassphraseParameterRead",
+  );
+  assert.match(
+    policy,
+    /actions: \["ssm:GetParameter", "ssm:PutParameter"\]/,
+  );
+  assert.ok(
+    policy.includes(
+      "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/web/production",
+    ),
+  );
+  assert.doesNotMatch(policy, /ssm:\*/);
+  assert.doesNotMatch(
+    policy,
+    /ssm:(DeleteParameter|GetParameters|GetParametersByPath|GetParameterHistory|DescribeParameters)/,
+  );
+});
+
 test("splits SST state bucket and object access across exact ARNs", () => {
   const policy = policySource(
     "sstStateBackendAccessPolicy",

@@ -35,7 +35,11 @@ inline identity policies:
 - `ssm:GetParameter` and `ssm:PutParameter` for the exact API production SST
   passphrase parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production`
-  only, allowing SST to initialize the missing passphrase once; and
+  only; and
+- `ssm:GetParameter` and `ssm:PutParameter` for the exact web production SST
+  passphrase parameter
+  `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/web/production`
+  only, allowing SST to initialize either missing application passphrase once; and
 - state backend bucket metadata/list access on
   `arn:aws:s3:::sst-state-euxnnsccdfbs`, plus state object read/write/delete
   access on `arn:aws:s3:::sst-state-euxnnsccdfbs/*`; and
@@ -46,8 +50,8 @@ inline identity policies:
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
-only the named SST control-plane parameters. The sole write action is
-`PutParameter` for the exact API production passphrase ARN; they grant no
+only the named SST control-plane parameters. The only write actions are
+`PutParameter` for the exact API and web production passphrase ARNs; they grant no
 parameter wildcard, deletion, path access, history, or enumeration action. The
 default Secrets Manager encryption key does not require a separate `kms:Decrypt`
 grant. If a customer-managed key is introduced, review and add a key-scoped
