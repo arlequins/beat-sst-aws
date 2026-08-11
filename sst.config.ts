@@ -308,6 +308,14 @@ export default $config({
           ],
         },
         {
+          sid: "ReadApiProductionLambdaDiagnostics",
+          effect: "Allow",
+          actions: ["logs:FilterLogEvents"],
+          resources: [
+            "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/api-production-*:*",
+          ],
+        },
+        {
           sid: "DiscoverRegionalLogGroups",
           effect: "Allow",
           actions: ["logs:DescribeLogGroups"],
