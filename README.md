@@ -148,7 +148,10 @@ either must be reviewed before this boundary changes.
 
 The separate web-production policy permits static asset object writes only to
 `web-production-*` buckets. It cannot access API data buckets, runtime secrets,
-or CloudFront resources without the SST `web` and `production` tags.
+or CloudFront distributions without the SST `web` and `production` tags. SST
+uses UUID-based CloudFront KeyValueStore ARNs after creation, so KVS control and
+key synchronization are limited to the one production web KVS ARN emitted by
+the reviewed deployment.
 
 The policy excludes `DeleteBucket`, `DeleteObjectVersion`, runtime-role deletion,
 Lambda/schedule/log/alarm/dashboard deletion, CloudFront, web, batch, RDS, EC2,
