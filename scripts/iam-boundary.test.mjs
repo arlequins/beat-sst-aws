@@ -97,6 +97,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "arn:aws:lambda:ap-northeast-1:205480711070:function:api-production-*",
     "arn:aws:scheduler:ap-northeast-1:205480711070:schedule/default/api-production-*",
     "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/api-production-*",
+    "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/api-production-*:*",
     "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-*",
     "arn:aws:cloudwatch::205480711070:dashboard/api-production",
   ]) {
@@ -134,6 +135,7 @@ test("limits API production deployment to the reviewed service and ARN set", () 
     "lambda:ListVersionsByFunction",
     "scheduler:CreateSchedule",
     "logs:CreateLogGroup",
+    "logs:FilterLogEvents",
     "logs:PutRetentionPolicy",
     "cloudwatch:PutMetricAlarm",
     "cloudwatch:PutDashboard",
@@ -144,6 +146,10 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   assert.match(
     policy,
     /actions: \["logs:DescribeLogGroups"\],[\s\S]*?resources: \["\*"\],[\s\S]*?variable: "aws:RequestedRegion",[\s\S]*?values: \["ap-northeast-1"\]/,
+  );
+  assert.match(
+    policy,
+    /sid: "ReadApiProductionLambdaDiagnostics",[\s\S]*?actions: \["logs:FilterLogEvents"\],[\s\S]*?resources: \[\s*"arn:aws:logs:ap-northeast-1:205480711070:log-group:\/aws\/lambda\/api-production-\*:\*"[\s\S]*?\]/,
   );
   assert.match(
     policy,

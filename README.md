@@ -89,7 +89,11 @@ The policy permits:
 - creation, read-only version and code-signing configuration enumeration, and
   in-place maintenance of only `api-production-*` Lambda functions, Function
   URLs and Lambda permissions, the default-group reconciliation schedule, and
-  `/aws/lambda/api-production-*` log groups;
+  `/aws/lambda/api-production-*` log groups. It may additionally run
+  `logs:FilterLogEvents` only against those Lambda log groups and their streams,
+  so the protected Beat diagnostic workflow can read a narrowly bounded failure
+  window after a production smoke check fails. It cannot read any other
+  CloudWatch log group or write/delete log events;
 - creation and in-place maintenance of only `api-production-*` alarms and the
   exact `api-production` dashboard.
 
@@ -237,6 +241,12 @@ the exact runtime-secret ARN, configure the initialization Environment values
 above and use **Initialize Beat runtime secret** rather than a local or console
 secret-value command. Configure the Beat repository's protected `production`
 Environment with the emitted role ARN and runtime secret ARN.
+
+This repository's production role policy is also the handoff for the protected
+Beat diagnostic workflow. When its narrowly scoped `logs:FilterLogEvents`
+permission changes, review the `diff` operation and apply it with the
+`deploy` operation in **Bootstrap AWS account**; never compensate with local
+AWS credentials, a console policy edit, or a broader Beat-side permission.
 
 `AWS_OIDC_PROVIDER_ARN` must reference the one provider created manually
 for `https://token.actions.githubusercontent.com`; the SST project reuses it
