@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.14](https://github.com/arlequins/beat-sst-aws/compare/v0.3.13...v0.3.14) (2026-08-11)
+
+
+### Bug Fixes
+
+* allow production Lambda log diagnostics ([#32](https://github.com/arlequins/beat-sst-aws/issues/32)) ([c4fe4fc](https://github.com/arlequins/beat-sst-aws/commit/c4fe4fc09faace4a8adfcce28297d80a855f5bfb))
+
 ## [0.3.13](https://github.com/arlequins/beat-sst-aws/compare/v0.3.12...v0.3.13) (2026-08-10)
 
 
