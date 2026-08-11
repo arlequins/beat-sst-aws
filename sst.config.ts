@@ -378,6 +378,178 @@ export default $config({
       role: deployRole.name,
       policy: apiProductionDeploymentPolicy.json,
     });
+    const webProductionDeploymentPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          sid: "ConfigureWebProductionBuckets",
+          effect: "Allow",
+          actions: [
+            "s3:CreateBucket",
+            "s3:GetAccelerateConfiguration",
+            "s3:GetBucketAcl",
+            "s3:GetBucketCORS",
+            "s3:GetBucketLocation",
+            "s3:GetBucketLogging",
+            "s3:GetBucketObjectLockConfiguration",
+            "s3:GetBucketOwnershipControls",
+            "s3:GetBucketPolicy",
+            "s3:GetBucketPolicyStatus",
+            "s3:GetBucketPublicAccessBlock",
+            "s3:GetBucketRequestPayment",
+            "s3:GetBucketTagging",
+            "s3:GetBucketVersioning",
+            "s3:GetBucketWebsite",
+            "s3:GetEncryptionConfiguration",
+            "s3:GetLifecycleConfiguration",
+            "s3:GetReplicationConfiguration",
+            "s3:ListBucket",
+            "s3:PutBucketCORS",
+            "s3:PutBucketObjectLockConfiguration",
+            "s3:PutBucketOwnershipControls",
+            "s3:PutBucketPolicy",
+            "s3:PutBucketPublicAccessBlock",
+            "s3:PutBucketTagging",
+            "s3:PutBucketVersioning",
+            "s3:PutEncryptionConfiguration",
+            "s3:PutLifecycleConfiguration",
+          ],
+          resources: ["arn:aws:s3:::web-production-*"],
+        },
+        {
+          sid: "ManageWebProductionAssetObjects",
+          effect: "Allow",
+          actions: [
+            "s3:AbortMultipartUpload",
+            "s3:DeleteObject",
+            "s3:GetObject",
+            "s3:ListMultipartUploadParts",
+            "s3:PutObject",
+          ],
+          resources: ["arn:aws:s3:::web-production-*/*"],
+        },
+        {
+          // CloudFront does not support a resource ARN for these create APIs.
+          // SST applies the required default tags as request tags, preventing
+          // this deployment role from creating untagged or non-web resources.
+          sid: "CreateTaggedWebProductionCloudFrontResources",
+          effect: "Allow",
+          actions: [
+            "cloudfront:CreateDistribution",
+            "cloudfront:CreateFunction",
+            "cloudfront:CreateKeyValueStore",
+          ],
+          resources: ["*"],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:app",
+              values: ["web"],
+            },
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:stage",
+              values: ["production"],
+            },
+          ],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontFunctions",
+          effect: "Allow",
+          actions: [
+            "cloudfront:DescribeFunction",
+            "cloudfront:GetFunction",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:PublishFunction",
+            "cloudfront:TagResource",
+            "cloudfront:UntagResource",
+            "cloudfront:UpdateFunction",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:function/web-production-*",
+          ],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontKeyValueStores",
+          effect: "Allow",
+          actions: [
+            "cloudfront:DescribeKeyValueStore",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:TagResource",
+            "cloudfront:UntagResource",
+            "cloudfront:UpdateKeyValueStore",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:key-value-store/web-production-*",
+          ],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontKeyValueData",
+          effect: "Allow",
+          actions: [
+            "cloudfront-keyvaluestore:DeleteKey",
+            "cloudfront-keyvaluestore:DescribeKeyValueStore",
+            "cloudfront-keyvaluestore:GetKey",
+            "cloudfront-keyvaluestore:ListKeys",
+            "cloudfront-keyvaluestore:PutKey",
+            "cloudfront-keyvaluestore:UpdateKeys",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:key-value-store/web-production-*",
+          ],
+        },
+        {
+          sid: "ManageTaggedWebProductionCloudFrontDistributions",
+          effect: "Allow",
+          actions: [
+            "cloudfront:CreateInvalidation",
+            "cloudfront:GetDistribution",
+            "cloudfront:GetDistributionConfig",
+            "cloudfront:GetInvalidation",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:UpdateDistribution",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:distribution/*",
+          ],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:ResourceTag/sst:app",
+              values: ["web"],
+            },
+            {
+              test: "StringEquals",
+              variable: "aws:ResourceTag/sst:stage",
+              values: ["production"],
+            },
+          ],
+        },
+        {
+          sid: "TagNewWebProductionCloudFrontDistributions",
+          effect: "Allow",
+          actions: ["cloudfront:TagResource", "cloudfront:UntagResource"],
+          resources: [
+            "arn:aws:cloudfront::205480711070:distribution/*",
+          ],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:app",
+              values: ["web"],
+            },
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:stage",
+              values: ["production"],
+            },
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatWebProductionDeployment", {
+      role: deployRole.name,
+      policy: webProductionDeploymentPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),

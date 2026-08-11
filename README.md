@@ -46,7 +46,12 @@ inline identity policies:
 - a reviewed API-production deployment policy limited to the exact SST asset
   bucket and `api-production-*` S3 buckets, runtime roles, Lambda functions,
   reconciliation schedule, Lambda log groups, alarms, and the
-  `api-production` dashboard.
+  `api-production` dashboard; and
+- a reviewed web-production deployment policy limited to `web-production-*`
+  private asset buckets and their objects, plus SST-tagged CloudFront
+  distributions, functions, and key-value stores. Its only wildcard resource
+  is the CloudFront create APIs that do not support resource-level IAM; those
+  requests must carry `sst:app=web` and `sst:stage=production` tags.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
@@ -140,6 +145,10 @@ The reviewed plan contains no S3 bucket objects and no standalone
 `aws:iam:Policy`, so this policy grants no application-bucket object data access
 and no `policy/api-production-*` managed-policy CRUD. A future diff that adds
 either must be reviewed before this boundary changes.
+
+The separate web-production policy permits static asset object writes only to
+`web-production-*` buckets. It cannot access API data buckets, runtime secrets,
+or CloudFront resources without the SST `web` and `production` tags.
 
 The policy excludes `DeleteBucket`, `DeleteObjectVersion`, runtime-role deletion,
 Lambda/schedule/log/alarm/dashboard deletion, CloudFront, web, batch, RDS, EC2,
