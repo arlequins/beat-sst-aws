@@ -114,6 +114,21 @@ export default $config({
       role: deployRole.name,
       policy: apiPassphraseParameterReadPolicy.json,
     });
+    const webPassphraseParameterReadPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: ["ssm:GetParameter", "ssm:PutParameter"],
+          resources: [
+            "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/web/production",
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatWebPassphraseParameterRead", {
+      role: deployRole.name,
+      policy: webPassphraseParameterReadPolicy.json,
+    });
     const sstStateBackendAccessPolicy = aws.iam.getPolicyDocumentOutput({
       statements: [
         {
