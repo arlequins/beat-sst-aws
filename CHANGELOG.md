@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/arlequins/beat-sst-aws/compare/v0.3.14...v0.4.0) (2026-08-11)
+
+
+### Features
+
+* scope production web static site deployment ([#36](https://github.com/arlequins/beat-sst-aws/issues/36)) ([94cff51](https://github.com/arlequins/beat-sst-aws/commit/94cff5156500678c711689c5eff5d4251a7ddb22))
+
+
+### Bug Fixes
+
+* allow SST static site CloudFront creation ([#37](https://github.com/arlequins/beat-sst-aws/issues/37)) ([8376ce5](https://github.com/arlequins/beat-sst-aws/commit/8376ce55c174e33b19f81bd6068592a0ed7c3cee))
+* allow static site key value store management ([#38](https://github.com/arlequins/beat-sst-aws/issues/38)) ([85fc417](https://github.com/arlequins/beat-sst-aws/commit/85fc417f4febeb73cff1aa27058c0fc36d5b0797))
+* allow static site key value store retries ([#39](https://github.com/arlequins/beat-sst-aws/issues/39)) ([03a9ddd](https://github.com/arlequins/beat-sst-aws/commit/03a9dddc8e4cee3524002740684f1fefd1d755ea))
+* allow web SST passphrase initialization ([#34](https://github.com/arlequins/beat-sst-aws/issues/34)) ([2b88f69](https://github.com/arlequins/beat-sst-aws/commit/2b88f69310dc762e3212bb916485cac0f3a209f9))
+
 ## [0.3.14](https://github.com/arlequins/beat-sst-aws/compare/v0.3.13...v0.3.14) (2026-08-11)
 
 
