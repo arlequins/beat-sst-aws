@@ -238,7 +238,7 @@ test("limits web production deployment to static-site resources", () => {
 
   assert.match(
     policy,
-    /sid: "CreateTaggedWebProductionCloudFrontResources",[\s\S]*?resources: \["\*"\],[\s\S]*?aws:RequestTag\/sst:app[\s\S]*?values: \["web"\],[\s\S]*?aws:RequestTag\/sst:stage[\s\S]*?values: \["production"\]/,
+    /sid: "CreateWebProductionCloudFrontResources",[\s\S]*?actions: \[[\s\S]*?"cloudfront:CreateDistribution"[\s\S]*?"cloudfront:CreateFunction"[\s\S]*?"cloudfront:CreateKeyValueStore"[\s\S]*?\][\s\S]*?resources: \["\*"\]/,
   );
   assert.match(
     policy,

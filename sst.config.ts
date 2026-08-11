@@ -428,10 +428,10 @@ export default $config({
           resources: ["arn:aws:s3:::web-production-*/*"],
         },
         {
-          // CloudFront does not support a resource ARN for these create APIs.
-          // SST applies the required default tags as request tags, preventing
-          // this deployment role from creating untagged or non-web resources.
-          sid: "CreateTaggedWebProductionCloudFrontResources",
+          // CloudFront does not support a resource ARN for these create APIs,
+          // and SST's StaticSite provider does not send request tags here.
+          // All follow-up access is constrained to production web resources.
+          sid: "CreateWebProductionCloudFrontResources",
           effect: "Allow",
           actions: [
             "cloudfront:CreateDistribution",
@@ -439,18 +439,6 @@ export default $config({
             "cloudfront:CreateKeyValueStore",
           ],
           resources: ["*"],
-          conditions: [
-            {
-              test: "StringEquals",
-              variable: "aws:RequestTag/sst:app",
-              values: ["web"],
-            },
-            {
-              test: "StringEquals",
-              variable: "aws:RequestTag/sst:stage",
-              values: ["production"],
-            },
-          ],
         },
         {
           sid: "ManageWebProductionCloudFrontFunctions",
