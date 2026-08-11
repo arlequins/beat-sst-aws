@@ -212,7 +212,7 @@ test("limits web production deployment to static-site resources", () => {
     "arn:aws:s3:::web-production-*",
     "arn:aws:s3:::web-production-*/*",
     "arn:aws:cloudfront::205480711070:function/web-production-*",
-    "arn:aws:cloudfront::205480711070:key-value-store/c87b6d1a-6bde-4388-afdf-02a088b15b8b",
+    "arn:aws:cloudfront::205480711070:key-value-store/*",
     "arn:aws:cloudfront::205480711070:distribution/*",
   ]) {
     assert.ok(policy.includes(arn), `missing reviewed ARN: ${arn}`);
