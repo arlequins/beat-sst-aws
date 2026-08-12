@@ -377,7 +377,7 @@ export default $config({
       environment: "production",
       providerArn: required("AWS_OIDC_PROVIDER_ARN"),
       subject:
-        "repo:arlequins/beat-agent:environment:production",
+        "repo:arlequins@21003599/beat-agent@1312374527:environment:production",
       tags: { ...tags, Project: "beat-agent" },
     });
     new aws.iam.RolePolicy("BeatAgentSstBootstrapParameterRead", {

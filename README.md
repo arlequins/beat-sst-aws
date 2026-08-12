@@ -55,7 +55,7 @@ inline identity policies:
 
 The bootstrap also creates the separate `beat-agent-github-production` role for
 the `arlequins/beat-agent` repository's `production` Environment. Its trust
-subject is exact (`repo:arlequins/beat-agent:environment:production`) and its
+subject is exact (`repo:arlequins@21003599/beat-agent@1312374527:environment:production`) and its
 deployment policy is limited to the shared SST state/asset resources plus
 `beat-agent-api-production-*` buckets, runtime roles, Lambda functions, SQS
 queues, log groups, alarms, and the `beat-agent-api-production` dashboard. It
