@@ -367,6 +367,430 @@ export default $config({
       role: deployRole.name,
       policy: apiProductionDeploymentPolicy.json,
     });
+
+    // Beat Agent is a separate application and therefore receives a separate
+    // OIDC trust boundary and a resource-prefix-scoped deployment policy. Do
+    // not broaden the Beat role to cover the Agent stack.
+    const agentDeployRole = createGitHubOidcRole({
+      name: "beat-agent-github-production",
+      repository: "arlequins/beat-agent",
+      environment: "production",
+      providerArn: required("AWS_OIDC_PROVIDER_ARN"),
+      subject:
+        "repo:arlequins/beat-agent:environment:production",
+      tags: { ...tags, Project: "beat-agent" },
+    });
+    new aws.iam.RolePolicy("BeatAgentSstBootstrapParameterRead", {
+      role: agentDeployRole.name,
+      policy: sstBootstrapParameterReadPolicy.json,
+    });
+    new aws.iam.RolePolicy("BeatAgentApiPassphraseParameterRead", {
+      role: agentDeployRole.name,
+      policy: apiPassphraseParameterReadPolicy.json,
+    });
+    new aws.iam.RolePolicy("BeatAgentSstStateBackendAccess", {
+      role: agentDeployRole.name,
+      policy: sstStateBackendAccessPolicy.json,
+    });
+    const agentApiProductionDeploymentPolicy =
+      aws.iam.getPolicyDocumentOutput({
+        statements: [
+          {
+            sid: "ManageExactSstAssetBucket",
+            effect: "Allow",
+            actions: [
+              "s3:GetBucketLocation",
+              "s3:ListBucket",
+              "s3:ListBucketMultipartUploads",
+            ],
+            resources: ["arn:aws:s3:::sst-asset-euxnnsccdfbs"],
+          },
+          {
+            sid: "ManageExactSstAssetObjects",
+            effect: "Allow",
+            actions: [
+              "s3:AbortMultipartUpload",
+              "s3:DeleteObject",
+              "s3:GetObject",
+              "s3:GetObjectTagging",
+              "s3:ListMultipartUploadParts",
+              "s3:PutObject",
+              "s3:PutObjectTagging",
+            ],
+            resources: ["arn:aws:s3:::sst-asset-euxnnsccdfbs/*"],
+          },
+          {
+            sid: "ConfigureAgentProductionBuckets",
+            effect: "Allow",
+            actions: [
+              "s3:CreateBucket",
+              "s3:GetAccelerateConfiguration",
+              "s3:GetBucketAcl",
+              "s3:GetBucketCORS",
+              "s3:GetBucketLocation",
+              "s3:GetBucketLogging",
+              "s3:GetBucketObjectLockConfiguration",
+              "s3:GetBucketOwnershipControls",
+              "s3:GetBucketPolicy",
+              "s3:GetBucketPolicyStatus",
+              "s3:GetBucketPublicAccessBlock",
+              "s3:GetBucketRequestPayment",
+              "s3:GetBucketTagging",
+              "s3:GetBucketVersioning",
+              "s3:GetBucketWebsite",
+              "s3:GetEncryptionConfiguration",
+              "s3:GetLifecycleConfiguration",
+              "s3:GetReplicationConfiguration",
+              "s3:ListBucket",
+              "s3:PutBucketCORS",
+              "s3:PutBucketObjectLockConfiguration",
+              "s3:PutBucketOwnershipControls",
+              "s3:PutBucketPolicy",
+              "s3:PutBucketPublicAccessBlock",
+              "s3:PutBucketTagging",
+              "s3:PutBucketVersioning",
+              "s3:PutEncryptionConfiguration",
+              "s3:PutLifecycleConfiguration",
+            ],
+            resources: ["arn:aws:s3:::beat-agent-api-production-*"],
+          },
+          {
+            sid: "ManageAgentProductionDataObjects",
+            effect: "Allow",
+            actions: [
+              "s3:AbortMultipartUpload",
+              "s3:DeleteObject",
+              "s3:GetObject",
+              "s3:ListMultipartUploadParts",
+              "s3:PutObject",
+            ],
+            resources: ["arn:aws:s3:::beat-agent-api-production-*/*"],
+          },
+          {
+            sid: "ManageAgentProductionRuntimeRoles",
+            effect: "Allow",
+            actions: [
+              "iam:CreateRole",
+              "iam:DeleteRolePolicy",
+              "iam:GetRole",
+              "iam:GetRolePolicy",
+              "iam:ListAttachedRolePolicies",
+              "iam:ListRolePolicies",
+              "iam:ListRoleTags",
+              "iam:PutRolePolicy",
+              "iam:TagRole",
+              "iam:UntagRole",
+              "iam:UpdateAssumeRolePolicy",
+              "iam:UpdateRole",
+            ],
+            resources: [
+              "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
+            ],
+          },
+          {
+            sid: "ManageAgentProductionLambdaLoggingPolicyAttachment",
+            effect: "Allow",
+            actions: ["iam:AttachRolePolicy", "iam:DetachRolePolicy"],
+            resources: [
+              "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
+            ],
+            conditions: [
+              {
+                test: "ArnEquals",
+                variable: "iam:PolicyARN",
+                values: [
+                  "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                ],
+              },
+            ],
+          },
+          {
+            sid: "PassAgentProductionRuntimeRolesToLambda",
+            effect: "Allow",
+            actions: ["iam:PassRole"],
+            resources: [
+              "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
+            ],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "iam:PassedToService",
+                values: ["lambda.amazonaws.com"],
+              },
+            ],
+          },
+          {
+            sid: "ManageAgentProductionFunctions",
+            effect: "Allow",
+            actions: [
+              "lambda:AddPermission",
+              "lambda:CreateFunction",
+              "lambda:CreateFunctionUrlConfig",
+              "lambda:GetFunction",
+              "lambda:GetFunctionCodeSigningConfig",
+              "lambda:GetFunctionConfiguration",
+              "lambda:GetFunctionUrlConfig",
+              "lambda:GetPolicy",
+              "lambda:ListTags",
+              "lambda:ListVersionsByFunction",
+              "lambda:RemovePermission",
+              "lambda:TagResource",
+              "lambda:UntagResource",
+              "lambda:UpdateFunctionCode",
+              "lambda:UpdateFunctionConfiguration",
+              "lambda:UpdateFunctionUrlConfig",
+            ],
+            resources: [
+              "arn:aws:lambda:ap-northeast-1:205480711070:function:beat-agent-api-production-*",
+            ],
+          },
+          {
+            sid: "ManageAgentProductionQueues",
+            effect: "Allow",
+            actions: [
+              "sqs:CreateQueue",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+              "sqs:ListQueueTags",
+              "sqs:SetQueueAttributes",
+              "sqs:TagQueue",
+              "sqs:UntagQueue",
+            ],
+            resources: [
+              "arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs*",
+            ],
+          },
+          {
+            sid: "ManageAgentProductionLogGroups",
+            effect: "Allow",
+            actions: [
+              "logs:CreateLogGroup",
+              "logs:DescribeLogStreams",
+              "logs:ListTagsForResource",
+              "logs:PutRetentionPolicy",
+              "logs:TagResource",
+              "logs:UntagResource",
+            ],
+            resources: [
+              "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/beat-agent-api-production-*",
+            ],
+          },
+          {
+            sid: "ReadAgentProductionLambdaDiagnostics",
+            effect: "Allow",
+            actions: ["logs:FilterLogEvents"],
+            resources: [
+              "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/beat-agent-api-production-*:*",
+            ],
+          },
+          {
+            sid: "DiscoverRegionalLogGroups",
+            effect: "Allow",
+            actions: ["logs:DescribeLogGroups"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "aws:RequestedRegion",
+                values: ["ap-northeast-1"],
+              },
+            ],
+          },
+          {
+            sid: "ManageAgentProductionAlarms",
+            effect: "Allow",
+            actions: [
+              "cloudwatch:DescribeAlarmHistory",
+              "cloudwatch:DescribeAlarms",
+              "cloudwatch:ListTagsForResource",
+              "cloudwatch:PutMetricAlarm",
+              "cloudwatch:TagResource",
+              "cloudwatch:UntagResource",
+            ],
+            resources: [
+              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-*",
+            ],
+          },
+          {
+            sid: "ManageExactAgentProductionDashboard",
+            effect: "Allow",
+            actions: [
+              "cloudwatch:GetDashboard",
+              "cloudwatch:ListTagsForResource",
+              "cloudwatch:PutDashboard",
+              "cloudwatch:TagResource",
+              "cloudwatch:UntagResource",
+            ],
+            resources: [
+              "arn:aws:cloudwatch::205480711070:dashboard/beat-agent-api-production",
+            ],
+          },
+        ],
+      });
+    new aws.iam.RolePolicy("BeatAgentApiProductionDeployment", {
+      role: agentDeployRole.name,
+      policy: agentApiProductionDeploymentPolicy.json,
+    });
+    const webProductionDeploymentPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          sid: "ConfigureWebProductionBuckets",
+          effect: "Allow",
+          actions: [
+            "s3:CreateBucket",
+            "s3:GetAccelerateConfiguration",
+            "s3:GetBucketAcl",
+            "s3:GetBucketCORS",
+            "s3:GetBucketLocation",
+            "s3:GetBucketLogging",
+            "s3:GetBucketObjectLockConfiguration",
+            "s3:GetBucketOwnershipControls",
+            "s3:GetBucketPolicy",
+            "s3:GetBucketPolicyStatus",
+            "s3:GetBucketPublicAccessBlock",
+            "s3:GetBucketRequestPayment",
+            "s3:GetBucketTagging",
+            "s3:GetBucketVersioning",
+            "s3:GetBucketWebsite",
+            "s3:GetEncryptionConfiguration",
+            "s3:GetLifecycleConfiguration",
+            "s3:GetReplicationConfiguration",
+            "s3:ListBucket",
+            "s3:PutBucketCORS",
+            "s3:PutBucketObjectLockConfiguration",
+            "s3:PutBucketOwnershipControls",
+            "s3:PutBucketPolicy",
+            "s3:PutBucketPublicAccessBlock",
+            "s3:PutBucketTagging",
+            "s3:PutBucketVersioning",
+            "s3:PutEncryptionConfiguration",
+            "s3:PutLifecycleConfiguration",
+          ],
+          resources: ["arn:aws:s3:::web-production-*"],
+        },
+        {
+          sid: "ManageWebProductionAssetObjects",
+          effect: "Allow",
+          actions: [
+            "s3:AbortMultipartUpload",
+            "s3:DeleteObject",
+            "s3:GetObject",
+            "s3:ListMultipartUploadParts",
+            "s3:PutObject",
+          ],
+          resources: ["arn:aws:s3:::web-production-*/*"],
+        },
+        {
+          // CloudFront does not support a resource ARN for these create APIs,
+          // and SST's StaticSite provider does not send request tags here.
+          // All follow-up access is constrained to production web resources.
+          sid: "CreateWebProductionCloudFrontResources",
+          effect: "Allow",
+          actions: [
+            "cloudfront:CreateDistribution",
+            "cloudfront:CreateFunction",
+            "cloudfront:CreateKeyValueStore",
+          ],
+          resources: ["*"],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontFunctions",
+          effect: "Allow",
+          actions: [
+            "cloudfront:DescribeFunction",
+            "cloudfront:GetFunction",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:PublishFunction",
+            "cloudfront:TagResource",
+            "cloudfront:UntagResource",
+            "cloudfront:UpdateFunction",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:function/web-production-*",
+          ],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontKeyValueStores",
+          effect: "Allow",
+          actions: [
+            "cloudfront:DescribeKeyValueStore",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:TagResource",
+            "cloudfront:UntagResource",
+            "cloudfront:UpdateKeyValueStore",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:key-value-store/*",
+          ],
+        },
+        {
+          sid: "ManageWebProductionCloudFrontKeyValueData",
+          effect: "Allow",
+          actions: [
+            "cloudfront-keyvaluestore:DeleteKey",
+            "cloudfront-keyvaluestore:DescribeKeyValueStore",
+            "cloudfront-keyvaluestore:GetKey",
+            "cloudfront-keyvaluestore:ListKeys",
+            "cloudfront-keyvaluestore:PutKey",
+            "cloudfront-keyvaluestore:UpdateKeys",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:key-value-store/*",
+          ],
+        },
+        {
+          sid: "ManageTaggedWebProductionCloudFrontDistributions",
+          effect: "Allow",
+          actions: [
+            "cloudfront:CreateInvalidation",
+            "cloudfront:GetDistribution",
+            "cloudfront:GetDistributionConfig",
+            "cloudfront:GetInvalidation",
+            "cloudfront:ListTagsForResource",
+            "cloudfront:UpdateDistribution",
+          ],
+          resources: [
+            "arn:aws:cloudfront::205480711070:distribution/*",
+          ],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:ResourceTag/sst:app",
+              values: ["web"],
+            },
+            {
+              test: "StringEquals",
+              variable: "aws:ResourceTag/sst:stage",
+              values: ["production"],
+            },
+          ],
+        },
+        {
+          sid: "TagNewWebProductionCloudFrontDistributions",
+          effect: "Allow",
+          actions: ["cloudfront:TagResource", "cloudfront:UntagResource"],
+          resources: [
+            "arn:aws:cloudfront::205480711070:distribution/*",
+          ],
+          conditions: [
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:app",
+              values: ["web"],
+            },
+            {
+              test: "StringEquals",
+              variable: "aws:RequestTag/sst:stage",
+              values: ["production"],
+            },
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatWebProductionDeployment", {
+      role: deployRole.name,
+      policy: webProductionDeploymentPolicy.json,
+    });
     const anomaly = createCostAnomalyAlerts({
       email,
       monitorArn: required("COST_ANOMALY_MONITOR_ARN"),
@@ -379,6 +803,7 @@ export default $config({
       cloudWatchAlarmEventsServiceLinkedRoleArn:
         cloudWatchAlarmEventsServiceLinkedRole.arn,
       githubProductionRoleArn: deployRole.arn,
+      agentGithubProductionRoleArn: agentDeployRole.arn,
       runtimeSecretArn: secret.arn,
     };
   },
