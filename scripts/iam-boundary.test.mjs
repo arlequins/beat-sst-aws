@@ -251,7 +251,7 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   );
   assert.match(
     source,
-    /name: "beat-agent-github-production"[\s\S]*?repository: "arlequins\/beat-agent"[\s\S]*?subject:[\s\S]*?repo:arlequins\/beat-agent:environment:production/,
+    /name: "beat-agent-github-production"[\s\S]*?repository: "arlequins\/beat-agent"[\s\S]*?subject:[\s\S]*?repo:arlequins@21003599\/beat-agent@1312374527:environment:production/,
   );
 });
 
