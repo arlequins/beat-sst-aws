@@ -91,6 +91,10 @@ export default $config({
           actions: ["ssm:GetParameter"],
           resources: [
             "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap",
+            // SST state export resolves its control-plane bootstrap parameter
+            // from SST's home region. Keep this exact, read-only ARN separate
+            // from the workload-region bootstrap parameter above.
+            "arn:aws:ssm:us-east-1:205480711070:parameter/sst/bootstrap",
           ],
         },
       ],
