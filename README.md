@@ -32,6 +32,9 @@ inline identity policies:
   ARN only; and
 - `ssm:GetParameter` for the exact regional SST bootstrap parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap` only; and
+- `ssm:GetParameter` for SST state export's exact home-region bootstrap
+  parameter `arn:aws:ssm:us-east-1:205480711070:parameter/sst/bootstrap`
+  only; and
 - `ssm:GetParameter` and `ssm:PutParameter` for the exact API production SST
   passphrase parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production`

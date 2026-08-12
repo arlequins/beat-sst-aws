@@ -27,14 +27,21 @@ function assertSingleParameterRead(policy, expectedArn) {
   );
 }
 
-test("limits SST bootstrap parameter access to one read action and ARN", () => {
+test("limits SST bootstrap parameter access to read-only exact regional ARNs", () => {
+  const policy = policySource(
+    "sstBootstrapParameterReadPolicy",
+    "BeatSstBootstrapParameterRead",
+  );
   assertSingleParameterRead(
-    policySource(
-      "sstBootstrapParameterReadPolicy",
-      "BeatSstBootstrapParameterRead",
-    ),
+    policy,
     "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/bootstrap",
   );
+  assert.ok(
+    policy.includes(
+      "arn:aws:ssm:us-east-1:205480711070:parameter/sst/bootstrap",
+    ),
+  );
+  assert.doesNotMatch(policy, /parameter\/sst\/\*/);
 });
 
 test("limits API passphrase initialization to Get and Put on one ARN", () => {
