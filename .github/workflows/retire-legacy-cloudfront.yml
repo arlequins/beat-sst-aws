@@ -1,0 +1,46 @@
+name: Retire legacy CloudFront web distribution
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Disable first, then delete after propagation
+        required: true
+        type: choice
+        options: [disable, delete]
+      distribution_id:
+        description: Exact distribution ID from the reviewed inventory artifact
+        required: true
+        type: string
+      confirm:
+        description: Type RETIRE_LEGACY_WEB to confirm the exact target
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  retire:
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    runs-on: ubuntu-latest
+    concurrency:
+      group: beat-legacy-web-retirement-production
+      cancel-in-progress: false
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      RETIRE_OPERATION: ${{ inputs.operation }}
+      RETIRE_DISTRIBUTION_ID: ${{ inputs.distribution_id }}
+      RETIRE_CONFIRM: ${{ inputs.confirm }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assume the bootstrap role through GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_BOOTSTRAP_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Retire the exact tagged distribution
+        shell: bash
+        run: ./scripts/retire-legacy-cloudfront.sh

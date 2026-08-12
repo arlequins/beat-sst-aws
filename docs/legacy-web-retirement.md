@@ -21,13 +21,20 @@ stale local SST state file.
 
 ## Retirement safety
 
-CloudFront deletion is destructive and asynchronous. A future retirement
-workflow must require the exact distribution ID and bucket name from the
-reviewed inventory, verify the `sst:app=web` and `sst:stage=production` tags,
-disable the distribution and wait for `Deployed` before deletion, and refuse to
-delete a non-empty or versioned bucket. It must run only from protected `main`
-through GitHub OIDC; local AWS/SST commands and long-lived access keys are not
-allowed.
+CloudFront deletion is destructive and asynchronous. The **Retire legacy
+CloudFront web distribution** workflow requires the exact distribution ID and
+`RETIRE_LEGACY_WEB` confirmation from the reviewed inventory, verifies the
+`sst:app=web` and `sst:stage=production` tags, and supports two separate runs:
+
+1. `operation=disable` turns off the distribution.
+2. After the inventory and CloudFront console/API show `Deployed`,
+   `operation=delete` removes only that disabled distribution.
+
+The workflow runs only from protected `main` through GitHub OIDC and the script
+refuses local execution. It does not delete the versioned
+`web-production-webassetsbucket-wrkdarbs` bucket or any object versions. Keep
+that bucket retained until a separate, explicit data-retention decision and
+version inventory are complete.
 
 Keep the web deployment policy attached to the Beat production role until the
 resources are retired. After retirement is independently verified, remove that
