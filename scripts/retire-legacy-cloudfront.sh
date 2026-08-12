@@ -58,10 +58,21 @@ case "$operation" in
       --output text
     ;;
   delete)
+    for attempt in {1..40}; do
+      status="$(aws cloudfront get-distribution --id "$distribution_id" --query 'Distribution.Status' --output text)"
+      [[ "$status" == "Deployed" ]] && break
+      echo "Waiting for CloudFront propagation (status=$status, attempt=$attempt/40)."
+      sleep 30
+    done
     [[ "$status" == "Deployed" ]] || {
       echo "Deletion requires a fully propagated distribution (status=$status)." >&2
       exit 1
     }
+    aws cloudfront get-distribution-config \
+      --id "$distribution_id" \
+      --output json > "$config_file"
+    etag="$(jq -r '.ETag' "$config_file")"
+    enabled="$(jq -r '.DistributionConfig.Enabled' "$config_file")"
     [[ "$enabled" == "false" ]] || {
       echo "Deletion requires the distribution to be disabled first." >&2
       exit 1

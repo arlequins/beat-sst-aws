@@ -28,7 +28,8 @@ CloudFront web distribution** workflow requires the exact distribution ID and
 
 1. `operation=disable` turns off the distribution.
 2. After the inventory and CloudFront console/API show `Deployed`,
-   `operation=delete` removes only that disabled distribution.
+   `operation=delete` waits up to 20 minutes for `Deployed` and removes only
+   that disabled distribution.
 
 The workflow runs only from protected `main` through GitHub OIDC and the script
 refuses local execution. It does not delete the versioned
