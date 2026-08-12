@@ -263,6 +263,22 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   );
 });
 
+test("gives Beat Agent SST its own exact passphrase parameter", () => {
+  const policy = policySource(
+    "agentApiPassphraseParameterReadPolicy",
+    "BeatAgentApiPassphraseParameterRead",
+  );
+  assert.match(
+    policy,
+    /actions: \["ssm:GetParameter", "ssm:PutParameter"\]/,
+  );
+  assert.match(
+    policy,
+    /arn:aws:ssm:ap-northeast-1:205480711070:parameter\/sst\/passphrase\/beat-agent-api\/production/,
+  );
+  assert.doesNotMatch(policy, /parameter\/sst\/passphrase\/\*/);
+});
+
 test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {
   assert.match(
     source,

@@ -114,6 +114,18 @@ export default $config({
         },
       ],
     });
+    const agentApiPassphraseParameterReadPolicy =
+      aws.iam.getPolicyDocumentOutput({
+        statements: [
+          {
+            effect: "Allow",
+            actions: ["ssm:GetParameter", "ssm:PutParameter"],
+            resources: [
+              "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/beat-agent-api/production",
+            ],
+          },
+        ],
+      });
     new aws.iam.RolePolicy("BeatApiPassphraseParameterRead", {
       role: deployRole.name,
       policy: apiPassphraseParameterReadPolicy.json,
@@ -386,7 +398,7 @@ export default $config({
     });
     new aws.iam.RolePolicy("BeatAgentApiPassphraseParameterRead", {
       role: agentDeployRole.name,
-      policy: apiPassphraseParameterReadPolicy.json,
+      policy: agentApiPassphraseParameterReadPolicy.json,
     });
     new aws.iam.RolePolicy("BeatAgentSstStateBackendAccess", {
       role: agentDeployRole.name,
