@@ -65,27 +65,6 @@ test("limits API passphrase initialization to Get and Put on one ARN", () => {
   );
 });
 
-test("limits web passphrase initialization to Get and Put on one ARN", () => {
-  const policy = policySource(
-    "webPassphraseParameterReadPolicy",
-    "BeatWebPassphraseParameterRead",
-  );
-  assert.match(
-    policy,
-    /actions: \["ssm:GetParameter", "ssm:PutParameter"\]/,
-  );
-  assert.ok(
-    policy.includes(
-      "arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/web/production",
-    ),
-  );
-  assert.doesNotMatch(policy, /ssm:\*/);
-  assert.doesNotMatch(
-    policy,
-    /ssm:(DeleteParameter|GetParameters|GetParametersByPath|GetParameterHistory|DescribeParameters)/,
-  );
-});
-
 test("splits SST state bucket and object access across exact ARNs", () => {
   const policy = policySource(
     "sstStateBackendAccessPolicy",
@@ -209,52 +188,12 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
 });
 
-test("limits web production deployment to static-site resources", () => {
-  const policy = policySource(
-    "webProductionDeploymentPolicy",
-    "BeatWebProductionDeployment",
-  );
-
-  for (const arn of [
-    "arn:aws:s3:::web-production-*",
-    "arn:aws:s3:::web-production-*/*",
-    "arn:aws:cloudfront::205480711070:function/web-production-*",
-    "arn:aws:cloudfront::205480711070:key-value-store/*",
-    "arn:aws:cloudfront::205480711070:distribution/*",
-  ]) {
-    assert.ok(policy.includes(arn), `missing reviewed ARN: ${arn}`);
-  }
-
-  for (const action of [
-    "s3:CreateBucket",
-    "s3:PutBucketPublicAccessBlock",
-    "s3:PutBucketVersioning",
-    "s3:PutEncryptionConfiguration",
-    "s3:PutBucketOwnershipControls",
-    "s3:PutObject",
-    "s3:DeleteObject",
-    "cloudfront:CreateDistribution",
-    "cloudfront:CreateFunction",
-    "cloudfront:CreateKeyValueStore",
-    "cloudfront:UpdateDistribution",
-    "cloudfront:PublishFunction",
-    "cloudfront-keyvaluestore:UpdateKeys",
-  ]) {
-    assert.ok(policy.includes(`\"${action}\"`), `missing action: ${action}`);
-  }
-
-  assert.match(
-    policy,
-    /sid: "CreateWebProductionCloudFrontResources",[\s\S]*?actions: \[[\s\S]*?"cloudfront:CreateDistribution"[\s\S]*?"cloudfront:CreateFunction"[\s\S]*?"cloudfront:CreateKeyValueStore"[\s\S]*?\][\s\S]*?resources: \["\*"\]/,
-  );
-  assert.match(
-    policy,
-    /sid: "ManageTaggedWebProductionCloudFrontDistributions",[\s\S]*?aws:ResourceTag\/sst:app[\s\S]*?values: \["web"\],[\s\S]*?aws:ResourceTag\/sst:stage[\s\S]*?values: \["production"\]/,
-  );
-  assert.equal((policy.match(/resources: \["\*"\]/g) ?? []).length, 1);
-  assert.doesNotMatch(policy, /[a-z-]+:\*/);
-  assert.doesNotMatch(policy, /(iam|lambda|secretsmanager|apigateway|rds|ec2):/);
-  assert.doesNotMatch(policy, /arn:aws:s3:::api-production-/);
+test("does not retain retired web deployment permissions", () => {
+  assert.doesNotMatch(source, /BeatWebPassphraseParameterRead/);
+  assert.doesNotMatch(source, /BeatWebProductionDeployment/);
+  assert.doesNotMatch(source, /webProductionDeploymentPolicy/);
+  assert.doesNotMatch(source, /cloudfront:/);
+  assert.doesNotMatch(source, /cloudfront-keyvaluestore:/);
 });
 
 test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {
