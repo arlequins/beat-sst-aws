@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.1](https://github.com/arlequins/beat-sst-aws/compare/v0.5.0...v0.5.1) (2026-08-12)
+
+
+### Bug Fixes
+
+* align Agent production resource policy ([5730e36](https://github.com/arlequins/beat-sst-aws/commit/5730e3617a1ce8a324beca4b1fe423c0a8e49cd6))
+* match Agent GitHub OIDC subject ([bf45a5b](https://github.com/arlequins/beat-sst-aws/commit/bf45a5b4f3c68387dbec5fe50e10acbfaaeec9b1))
+* match Beat Agent GitHub OIDC subject ([bf45a5b](https://github.com/arlequins/beat-sst-aws/commit/bf45a5b4f3c68387dbec5fe50e10acbfaaeec9b1))
+* scope Agent SST passphrase parameter ([b2d3b67](https://github.com/arlequins/beat-sst-aws/commit/b2d3b670b350eb04fa6f78353d5e72783c6b0f9d))
+* scope Beat Agent queue creation by name ([127fba1](https://github.com/arlequins/beat-sst-aws/commit/127fba1c2dfad9c6d80a50dffc368cfa322282fa))
+
 ## [0.5.0](https://github.com/arlequins/beat-sst-aws/compare/v0.4.1...v0.5.0) (2026-08-12)
 
 
