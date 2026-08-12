@@ -45,10 +45,6 @@ inline identity policies:
   passphrase parameter
   `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/api/production`
   only; and
-- `ssm:GetParameter` and `ssm:PutParameter` for the exact web production SST
-  passphrase parameter
-  `arn:aws:ssm:ap-northeast-1:205480711070:parameter/sst/passphrase/web/production`
-  only, allowing SST to initialize either missing application passphrase once; and
 - state backend bucket metadata/list access on
   `arn:aws:s3:::sst-state-euxnnsccdfbs`, plus state object read/write/delete
   access on `arn:aws:s3:::sst-state-euxnnsccdfbs/*`; and
@@ -56,16 +52,11 @@ inline identity policies:
   bucket and `api-production-*` S3 buckets, runtime roles, Lambda functions,
   reconciliation schedule, Lambda log groups, alarms, and the
   `api-production` dashboard; and
-- a reviewed web-production deployment policy limited to `web-production-*`
-  private asset buckets and their objects, plus SST-tagged CloudFront
-  distributions, functions, and key-value stores. Its only wildcard resource
-  is the CloudFront create APIs, which do not support resource-level IAM or
-  request tags in SST's StaticSite provider; all follow-up access is scoped.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
-only the named SST control-plane parameters. The only write actions are
-`PutParameter` for the exact API and web production passphrase ARNs; they grant no
+only the named SST control-plane parameters. The only write action is
+`PutParameter` for the exact API production passphrase ARN; it grants no
 parameter wildcard, deletion, path access, history, or enumeration action. The
 default Secrets Manager encryption key does not require a separate `kms:Decrypt`
 grant. If a customer-managed key is introduced, review and add a key-scoped
@@ -155,12 +146,10 @@ The reviewed plan contains no S3 bucket objects and no standalone
 and no `policy/api-production-*` managed-policy CRUD. A future diff that adds
 either must be reviewed before this boundary changes.
 
-The separate web-production policy permits static asset object writes only to
-`web-production-*` buckets. It cannot access API data buckets, runtime secrets,
-or CloudFront distributions without the SST `web` and `production` tags. SST
-creates a new UUID-based CloudFront KeyValueStore on each protected deployment
-retry until state is complete, so KVS control and key synchronization are
-limited to that CloudFront resource type in this account.
+The retired web CloudFront distribution was removed through the protected
+OIDC-only workflow. The versioned `web-production-*` asset bucket remains
+retained without application deployment permissions until a separate data
+retention decision.
 
 The policy excludes `DeleteBucket`, `DeleteObjectVersion`, runtime-role deletion,
 Lambda/schedule/log/alarm/dashboard deletion, CloudFront, web, batch, RDS, EC2,
