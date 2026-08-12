@@ -208,13 +208,14 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   for (const arn of [
     "arn:aws:s3:::sst-asset-euxnnsccdfbs",
     "arn:aws:s3:::sst-asset-euxnnsccdfbs/*",
-    "arn:aws:s3:::beat-agent-api-production-*",
-    "arn:aws:s3:::beat-agent-api-production-*/*",
+    "arn:aws:s3:::beat-agent-api-production-data",
+    "arn:aws:s3:::beat-agent-api-production-data/*",
     "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
     "arn:aws:lambda:ap-northeast-1:205480711070:function:beat-agent-api-production-*",
     "arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs*",
     "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/beat-agent-api-production-*",
-    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-*",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-server-errors",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-latency",
     "arn:aws:cloudwatch::205480711070:dashboard/beat-agent-api-production",
   ]) {
     assert.ok(policy.includes(arn), `missing Agent ARN: ${arn}`);
@@ -242,6 +243,7 @@ test("limits Beat Agent production deployment to its own application prefix", ()
 
   assert.doesNotMatch(policy, /arn:aws:s3:::api-production-/);
   assert.doesNotMatch(policy, /arn:aws:s3:::web-production-/);
+  assert.doesNotMatch(policy, /arn:aws:s3:::beat-agent-api-production-\*\/\*/);
   assert.doesNotMatch(policy, /arn:aws:secretsmanager:/);
   assert.doesNotMatch(policy, /AdministratorAccess/);
   assert.doesNotMatch(policy, /[a-z]+:\*/);

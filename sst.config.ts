@@ -464,7 +464,7 @@ export default $config({
               "s3:PutEncryptionConfiguration",
               "s3:PutLifecycleConfiguration",
             ],
-            resources: ["arn:aws:s3:::beat-agent-api-production-*"],
+            resources: ["arn:aws:s3:::beat-agent-api-production-data"],
           },
           {
             sid: "ManageAgentProductionDataObjects",
@@ -476,7 +476,7 @@ export default $config({
               "s3:ListMultipartUploadParts",
               "s3:PutObject",
             ],
-            resources: ["arn:aws:s3:::beat-agent-api-production-*/*"],
+            resources: ["arn:aws:s3:::beat-agent-api-production-data/*"],
           },
           {
             sid: "ManageAgentProductionRuntimeRoles",
@@ -634,7 +634,8 @@ export default $config({
               "cloudwatch:UntagResource",
             ],
             resources: [
-              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-*",
+              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-server-errors",
+              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-latency",
             ],
           },
           {
