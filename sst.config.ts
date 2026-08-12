@@ -545,10 +545,24 @@ export default $config({
             ],
           },
           {
+            // SQS CreateQueue authorizes against `*`; keep the queue-name
+            // condition so this does not become an account-wide create grant.
+            sid: "CreateAgentProductionQueues",
+            effect: "Allow",
+            actions: ["sqs:CreateQueue"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "StringLike",
+                variable: "sqs:QueueName",
+                values: ["beat-agent-api-production-jobs*"],
+              },
+            ],
+          },
+          {
             sid: "ManageAgentProductionQueues",
             effect: "Allow",
             actions: [
-              "sqs:CreateQueue",
               "sqs:GetQueueAttributes",
               "sqs:GetQueueUrl",
               "sqs:ListQueueTags",

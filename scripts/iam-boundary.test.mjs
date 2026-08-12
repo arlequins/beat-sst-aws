@@ -253,6 +253,14 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     source,
     /name: "beat-agent-github-production"[\s\S]*?repository: "arlequins\/beat-agent"[\s\S]*?subject:[\s\S]*?repo:arlequins@21003599\/beat-agent@1312374527:environment:production/,
   );
+  assert.match(
+    policy,
+    /sid: "CreateAgentProductionQueues"[\s\S]*?actions: \["sqs:CreateQueue"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "sqs:QueueName"[\s\S]*?beat-agent-api-production-jobs\*/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageAgentProductionQueues"[\s\S]*?actions: \[[\s\S]*?"sqs:SetQueueAttributes"[\s\S]*?\][\s\S]*?arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs\*/,
+  );
 });
 
 test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {
