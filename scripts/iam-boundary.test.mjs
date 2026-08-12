@@ -5,13 +5,16 @@ import test from "node:test";
 const source = readFileSync(new URL("../sst.config.ts", import.meta.url), "utf8");
 
 function policySource(constantName, rolePolicyName) {
+  const declarationStart = source.indexOf(`const ${constantName}`);
   const policyStart = source.indexOf(
-    `const ${constantName} = aws.iam.getPolicyDocumentOutput`,
+    "aws.iam.getPolicyDocumentOutput",
+    declarationStart,
   );
   const policyEnd = source.indexOf(
     `new aws.iam.RolePolicy("${rolePolicyName}"`,
     policyStart,
   );
+  assert.notEqual(declarationStart, -1);
   assert.notEqual(policyStart, -1);
   assert.notEqual(policyEnd, -1);
   return source.slice(policyStart, policyEnd);
@@ -194,6 +197,62 @@ test("does not retain retired web deployment permissions", () => {
   assert.doesNotMatch(source, /webProductionDeploymentPolicy/);
   assert.doesNotMatch(source, /cloudfront:/);
   assert.doesNotMatch(source, /cloudfront-keyvaluestore:/);
+});
+
+test("limits Beat Agent production deployment to its own application prefix", () => {
+  const policy = policySource(
+    "agentApiProductionDeploymentPolicy",
+    "BeatAgentApiProductionDeployment",
+  );
+
+  for (const arn of [
+    "arn:aws:s3:::sst-asset-euxnnsccdfbs",
+    "arn:aws:s3:::sst-asset-euxnnsccdfbs/*",
+    "arn:aws:s3:::beat-agent-api-production-*",
+    "arn:aws:s3:::beat-agent-api-production-*/*",
+    "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
+    "arn:aws:lambda:ap-northeast-1:205480711070:function:beat-agent-api-production-*",
+    "arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs*",
+    "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/beat-agent-api-production-*",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-*",
+    "arn:aws:cloudwatch::205480711070:dashboard/beat-agent-api-production",
+  ]) {
+    assert.ok(policy.includes(arn), `missing Agent ARN: ${arn}`);
+  }
+
+  for (const action of [
+    "s3:CreateBucket",
+    "s3:PutBucketPublicAccessBlock",
+    "s3:PutBucketVersioning",
+    "s3:PutEncryptionConfiguration",
+    "s3:PutObject",
+    "iam:CreateRole",
+    "iam:PassRole",
+    "lambda:CreateFunction",
+    "lambda:CreateFunctionUrlConfig",
+    "sqs:CreateQueue",
+    "sqs:SetQueueAttributes",
+    "logs:CreateLogGroup",
+    "logs:FilterLogEvents",
+    "cloudwatch:PutMetricAlarm",
+    "cloudwatch:PutDashboard",
+  ]) {
+    assert.ok(policy.includes(`"${action}"`), `missing Agent action: ${action}`);
+  }
+
+  assert.doesNotMatch(policy, /arn:aws:s3:::api-production-/);
+  assert.doesNotMatch(policy, /arn:aws:s3:::web-production-/);
+  assert.doesNotMatch(policy, /arn:aws:secretsmanager:/);
+  assert.doesNotMatch(policy, /AdministratorAccess/);
+  assert.doesNotMatch(policy, /[a-z]+:\*/);
+  assert.doesNotMatch(
+    policy,
+    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
+  );
+  assert.match(
+    source,
+    /name: "beat-agent-github-production"[\s\S]*?repository: "arlequins\/beat-agent"[\s\S]*?subject:[\s\S]*?repo:arlequins\/beat-agent:environment:production/,
+  );
 });
 
 test("baseline owns the CloudWatch Events service-linked role prerequisite", () => {

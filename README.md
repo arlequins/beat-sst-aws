@@ -17,7 +17,7 @@ resources:
 - Access Analyzer;
 - the CloudWatch Events service-linked role required when an account creates
   its first CloudWatch alarm;
-- GitHub OIDC trust and the Beat production deployment role;
+- GitHub OIDC trust and the Beat / Beat Agent production deployment roles;
 - the empty Beat runtime secret container.
 
 The Beat application repository owns its generated state and ledger buckets,
@@ -52,6 +52,18 @@ inline identity policies:
   bucket and `api-production-*` S3 buckets, runtime roles, Lambda functions,
   reconciliation schedule, Lambda log groups, alarms, and the
   `api-production` dashboard; and
+
+The bootstrap also creates the separate `beat-agent-github-production` role for
+the `arlequins/beat-agent` repository's `production` Environment. Its trust
+subject is exact (`repo:arlequins/beat-agent:environment:production`) and its
+deployment policy is limited to the shared SST state/asset resources plus
+`beat-agent-api-production-*` buckets, runtime roles, Lambda functions, SQS
+queues, log groups, alarms, and the `beat-agent-api-production` dashboard. It
+does not read the Beat runtime secret or grant access to Beat's
+`api-production-*` and `web-production-*` resources. Pass the emitted
+`agentGithubProductionRoleArn` output to the Agent repository's protected
+`AWS_DEPLOY_ROLE_ARN` secret; never copy the Beat role into the Agent
+repository.
 
 The secret retains the matching resource policy. Both secret policies are
 required for the production role to read that secret. The SSM permissions read
