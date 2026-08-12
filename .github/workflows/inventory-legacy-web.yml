@@ -1,0 +1,38 @@
+name: Inventory legacy web resources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  inventory:
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    runs-on: ubuntu-latest
+    concurrency:
+      group: beat-legacy-web-inventory-production
+      cancel-in-progress: false
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assume the bootstrap role through GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_BOOTSTRAP_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          inline-session-policy: >-
+            {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["sts:GetCallerIdentity","cloudfront:ListDistributions","cloudfront:ListTagsForResource","s3:ListAllMyBuckets"],"Resource":"*"},{"Effect":"Allow","Action":["s3:GetBucketLocation","s3:GetBucketTagging","s3:GetBucketVersioning","s3:GetPublicAccessBlock","s3:ListBucket","s3:ListBucketVersions"],"Resource":"arn:aws:s3:::web-production-*"}]}
+      - name: Inventory retained web resources
+        shell: bash
+        run: ./scripts/inventory-legacy-web.sh
+      - name: Upload inventory artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-web-inventory-${{ github.sha }}
+          path: legacy-web-inventory.json
+          if-no-files-found: error
+          retention-days: 30

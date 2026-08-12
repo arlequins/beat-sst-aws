@@ -25,6 +25,12 @@ Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
 its generated bucket names into the API and retains them in production.
 
+Beat's public frontend is now published by GitHub Pages at
+`https://arlequins.github.io/beat`. The former SST web resources remain
+retained until the protected, read-only inventory and reviewed retirement
+procedure in [`docs/legacy-web-retirement.md`](docs/legacy-web-retirement.md)
+has completed.
+
 The generated GitHub role contains the narrow OIDC trust policy and five separate
 inline identity policies:
 
