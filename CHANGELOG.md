@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/arlequins/beat-sst-aws/compare/v0.4.0...v0.4.1) (2026-08-12)
+
+
+### Bug Fixes
+
+* allow SST home-region bootstrap reads ([#40](https://github.com/arlequins/beat-sst-aws/issues/40)) ([47e46b9](https://github.com/arlequins/beat-sst-aws/commit/47e46b9b3054bc07c5b28a3ead5f2e7d3edaf0ee))
+
 ## [0.4.0](https://github.com/arlequins/beat-sst-aws/compare/v0.3.14...v0.4.0) (2026-08-11)
 
 
