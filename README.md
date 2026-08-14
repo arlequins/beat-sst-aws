@@ -212,10 +212,11 @@ must never receive these write actions.
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "InitializeOnlyTheBeatRuntimeSecret",
+      "Sid": "ManageOnlyTheBeatRuntimeSecret",
       "Effect": "Allow",
       "Action": [
         "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue",
         "secretsmanager:PutSecretValue"
       ],
       "Resource": "RUNTIME_SECRET_ARN"
@@ -227,6 +228,34 @@ must never receive these write actions.
 The baseline uses the AWS-managed Secrets Manager key, so this procedure does
 not need a KMS grant. A future customer-managed key requires a separately
 reviewed, key-scoped grant.
+
+### Google SSO runtime-secret update
+
+After creating the production Google OAuth web client, configure these values
+as **production Environment secrets** in this repository:
+
+- `BEAT_AUTH_GOOGLE_CLIENT_ID`
+- `BEAT_AUTH_GOOGLE_CLIENT_SECRET`
+- `BEAT_AUTH_GOOGLE_REDIRECT_URI`
+
+The redirect secret must be the exact HTTPS URL ending in
+`/auth/google/callback` and must match `BEAT_AUTH_ISSUER_URL` from the existing
+runtime secret. Do not put these values in repository variables, source files,
+or the Beat portfolio's `NEXT_PUBLIC_*` settings.
+
+Run **Update Beat Google runtime secret** from `main` after setting the
+production Environment secrets. The protected workflow assumes
+`AWS_BOOTSTRAP_ROLE_ARN` through GitHub OIDC, reads the current JSON, merges
+only these three fields, and writes one new Secrets Manager version. It never
+prints the values or replaces generated signing/GitHub App fields. The workflow
+is intentionally manual and protected; changing an Environment secret does
+not silently mutate production by itself.
+
+The bootstrap role used by this workflow needs exact access to the existing
+runtime-secret ARN for `secretsmanager:DescribeSecret`,
+`secretsmanager:GetSecretValue`, and `secretsmanager:PutSecretValue`. Keep
+these write permissions on the bootstrap role only; the Beat production
+deployment role remains read-only with `GetSecretValue`.
 
 ### Issuer URL order and rotation
 
