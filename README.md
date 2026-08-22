@@ -68,6 +68,9 @@ CloudWatch's tagged-alarm creation path is limited by the explicit
 region; alarm reads, updates, and untagging remain bound to the four exact alarm
 ARNs, except the read-only regional `DescribeAlarms` discovery call that
 CloudWatch authorizes at account scope.
+The two exact auto-named alarm ARNs are a temporary migration boundary for
+replacing resources partially created before Beat Agent pinned the provider's
+`name` property; remove that statement after the corrected deployment succeeds.
 It does not read the Beat runtime secret or grant access to Beat's
 `api-production-*` and `web-production-*` resources. Pass the emitted
 `agentGithubProductionRoleArn` output to the Agent repository's protected
