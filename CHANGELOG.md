@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.5](https://github.com/arlequins/beat-sst-aws/compare/v0.6.4...v0.6.5) (2026-08-22)
+
+
+### Bug Fixes
+
+* **iam:** clean up known agent alarms ([#63](https://github.com/arlequins/beat-sst-aws/issues/63)) ([17d8a58](https://github.com/arlequins/beat-sst-aws/commit/17d8a588e7054fe7b50e0ee521b42bd96bb3dc8c))
+
 ## [0.6.4](https://github.com/arlequins/beat-sst-aws/compare/v0.6.3...v0.6.4) (2026-08-22)
 
 
