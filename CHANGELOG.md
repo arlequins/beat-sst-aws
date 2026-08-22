@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/arlequins/beat-sst-aws/compare/v0.6.0...v0.6.1) (2026-08-22)
+
+
+### Bug Fixes
+
+* allow agent async production resources ([#55](https://github.com/arlequins/beat-sst-aws/issues/55)) ([9169c7e](https://github.com/arlequins/beat-sst-aws/commit/9169c7eb40cf58f43875aed0526db0326a91e54b))
+
 ## [0.6.0](https://github.com/arlequins/beat-sst-aws/compare/v0.5.1...v0.6.0) (2026-08-14)
 
 
