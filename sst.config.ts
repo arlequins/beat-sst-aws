@@ -715,11 +715,26 @@ export default $config({
             ],
           },
           {
+            // CloudWatch's DescribeAlarms API authorizes account-level
+            // discovery even when the request filters by an exact alarm name.
+            // Keep this read-only exception within the production region.
+            sid: "DiscoverAgentProductionAlarms",
+            effect: "Allow",
+            actions: ["cloudwatch:DescribeAlarms"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "aws:RequestedRegion",
+                values: ["ap-northeast-1"],
+              },
+            ],
+          },
+          {
             sid: "ManageAgentProductionAlarms",
             effect: "Allow",
             actions: [
               "cloudwatch:DescribeAlarmHistory",
-              "cloudwatch:DescribeAlarms",
               "cloudwatch:ListTagsForResource",
               "cloudwatch:PutMetricAlarm",
               "cloudwatch:UntagResource",

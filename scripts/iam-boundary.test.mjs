@@ -291,6 +291,10 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   );
   assert.match(
     policy,
+    /sid: "DiscoverAgentProductionAlarms"[\s\S]*?actions: \["cloudwatch:DescribeAlarms"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
+  );
+  assert.match(
+    policy,
     /sid: "ManageAgentProductionAlarms"[\s\S]*?"cloudwatch:PutMetricAlarm"[\s\S]*?"cloudwatch:UntagResource"[\s\S]*?beat-agent-api-production-jobs-dlq[\s\S]*?beat-agent-api-production-daily-model-tokens/,
   );
 });

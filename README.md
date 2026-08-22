@@ -66,7 +66,8 @@ function prefix; the policy grants no mapping/rule deletion or target removal.
 CloudWatch's tagged-alarm creation path is limited by the explicit
 `Application=beat-agent` and `Stage=production` request tags plus the production
 region; alarm reads, updates, and untagging remain bound to the four exact alarm
-ARNs.
+ARNs, except the read-only regional `DescribeAlarms` discovery call that
+CloudWatch authorizes at account scope.
 It does not read the Beat runtime secret or grant access to Beat's
 `api-production-*` and `web-production-*` resources. Pass the emitted
 `agentGithubProductionRoleArn` output to the Agent repository's protected
