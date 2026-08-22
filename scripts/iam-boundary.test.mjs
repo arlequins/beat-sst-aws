@@ -285,6 +285,14 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     policy,
     /sid: "ManageExactAgentWeeklyEvaluationRule"[\s\S]*?"events:PutRule"[\s\S]*?"events:PutTargets"[\s\S]*?rule\/beat-agent-api-production-weekly-evaluation/,
   );
+  assert.match(
+    policy,
+    /sid: "TagAgentProductionAlarmsOnCreate"[\s\S]*?actions: \["cloudwatch:TagResource"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "aws:RequestTag\/sst:app"[\s\S]*?beat-agent-api[\s\S]*?variable: "aws:RequestTag\/sst:stage"[\s\S]*?production[\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageAgentProductionAlarms"[\s\S]*?"cloudwatch:PutMetricAlarm"[\s\S]*?"cloudwatch:UntagResource"[\s\S]*?beat-agent-api-production-jobs-dlq[\s\S]*?beat-agent-api-production-daily-model-tokens/,
+  );
 });
 
 test("gives Beat Agent SST its own exact passphrase parameter", () => {

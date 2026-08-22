@@ -685,6 +685,32 @@ export default $config({
             ],
           },
           {
+            // PutMetricAlarm evaluates TagResource as a dependent create
+            // authorization before the alarm ARN exists. Keep the required
+            // wildcard resource constrained to SST's exact app/stage tags.
+            sid: "TagAgentProductionAlarmsOnCreate",
+            effect: "Allow",
+            actions: ["cloudwatch:TagResource"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "aws:RequestTag/sst:app",
+                values: ["beat-agent-api"],
+              },
+              {
+                test: "StringEquals",
+                variable: "aws:RequestTag/sst:stage",
+                values: ["production"],
+              },
+              {
+                test: "StringEquals",
+                variable: "aws:RequestedRegion",
+                values: ["ap-northeast-1"],
+              },
+            ],
+          },
+          {
             sid: "ManageAgentProductionAlarms",
             effect: "Allow",
             actions: [
@@ -692,7 +718,6 @@ export default $config({
               "cloudwatch:DescribeAlarms",
               "cloudwatch:ListTagsForResource",
               "cloudwatch:PutMetricAlarm",
-              "cloudwatch:TagResource",
               "cloudwatch:UntagResource",
             ],
             resources: [
