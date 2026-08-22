@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/arlequins/beat-sst-aws/compare/v0.6.3...v0.6.4) (2026-08-22)
+
+
+### Bug Fixes
+
+* **iam:** allow regional alarm discovery ([#61](https://github.com/arlequins/beat-sst-aws/issues/61)) ([090edd6](https://github.com/arlequins/beat-sst-aws/commit/090edd68497e15efbde50657432488f3fb0119d5))
+
 ## [0.6.3](https://github.com/arlequins/beat-sst-aws/compare/v0.6.2...v0.6.3) (2026-08-22)
 
 
