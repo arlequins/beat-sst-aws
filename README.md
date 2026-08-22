@@ -63,6 +63,10 @@ queues, the worker's regional Lambda event-source mapping, the exact
 four exact alarms, and the `beat-agent-api-production` dashboard. Mapping
 creation has an additional `lambda:FunctionArn` condition for the Agent
 function prefix; the policy grants no mapping/rule deletion or target removal.
+CloudWatch alarm creation's dependent tag authorization is limited by the
+exact SST `sst:app=beat-agent-api` and `sst:stage=production` request tags plus
+the production region; alarm reads, updates, and untagging remain bound to the
+four exact alarm ARNs.
 It does not read the Beat runtime secret or grant access to Beat's
 `api-production-*` and `web-production-*` resources. Pass the emitted
 `agentGithubProductionRoleArn` output to the Agent repository's protected
