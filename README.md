@@ -58,8 +58,12 @@ the `arlequins/beat-agent` repository's `production` Environment. Its trust
 subject is exact (`repo:arlequins@21003599/beat-agent@1312374527:environment:production`) and its
 deployment policy is limited to the shared SST state/asset resources plus
 `beat-agent-api-production-*` buckets, runtime roles, Lambda functions, SQS
-queues, log groups, alarms, and the `beat-agent-api-production` dashboard. It
-does not read the Beat runtime secret or grant access to Beat's
+queues, the worker's regional Lambda event-source mapping, the exact
+`beat-agent-api-production-weekly-evaluation` EventBridge rule, log groups,
+four exact alarms, and the `beat-agent-api-production` dashboard. Mapping
+creation has an additional `lambda:FunctionArn` condition for the Agent
+function prefix; the policy grants no mapping/rule deletion or target removal.
+It does not read the Beat runtime secret or grant access to Beat's
 `api-production-*` and `web-production-*` resources. Pass the emitted
 `agentGithubProductionRoleArn` output to the Agent repository's protected
 `AWS_DEPLOY_ROLE_ARN` secret; never copy the Beat role into the Agent
