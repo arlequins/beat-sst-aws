@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/arlequins/beat-sst-aws/compare/v0.6.1...v0.6.2) (2026-08-22)
+
+
+### Bug Fixes
+
+* allow tagged agent alarm creation ([#57](https://github.com/arlequins/beat-sst-aws/issues/57)) ([a0c7e0c](https://github.com/arlequins/beat-sst-aws/commit/a0c7e0ca7a15388ddd60e5da48b571b4d1fec2e3))
+
 ## [0.6.1](https://github.com/arlequins/beat-sst-aws/compare/v0.6.0...v0.6.1) (2026-08-22)
 
 
