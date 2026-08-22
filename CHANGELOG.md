@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.6](https://github.com/arlequins/beat-sst-aws/compare/v0.6.5...v0.6.6) (2026-08-22)
+
+
+### Bug Fixes
+
+* **iam:** remove agent alarm cleanup permission ([#65](https://github.com/arlequins/beat-sst-aws/issues/65)) ([ca12bdc](https://github.com/arlequins/beat-sst-aws/commit/ca12bdce3eef43e54622ea22928bf9c8b693f1e1))
+
 ## [0.6.5](https://github.com/arlequins/beat-sst-aws/compare/v0.6.4...v0.6.5) (2026-08-22)
 
 
