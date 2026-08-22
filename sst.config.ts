@@ -557,6 +557,52 @@ export default $config({
             ],
           },
           {
+            // CreateEventSourceMapping has no resource ARN. Restrict the
+            // account-wide authorization to the Agent worker function prefix.
+            sid: "CreateAgentProductionEventSourceMappings",
+            effect: "Allow",
+            actions: ["lambda:CreateEventSourceMapping"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "ArnLike",
+                variable: "lambda:FunctionArn",
+                values: [
+                  "arn:aws:lambda:ap-northeast-1:205480711070:function:beat-agent-api-production-*",
+                ],
+              },
+            ],
+          },
+          {
+            // Lambda assigns mapping UUIDs, so this is the narrowest ARN
+            // boundary available before the mapping exists.
+            sid: "ManageAgentProductionEventSourceMappings",
+            effect: "Allow",
+            actions: [
+              "lambda:GetEventSourceMapping",
+              "lambda:ListTags",
+              "lambda:TagResource",
+              "lambda:UntagResource",
+              "lambda:UpdateEventSourceMapping",
+            ],
+            resources: [
+              "arn:aws:lambda:ap-northeast-1:205480711070:event-source-mapping:*",
+            ],
+          },
+          {
+            sid: "DiscoverAgentProductionEventSourceMappings",
+            effect: "Allow",
+            actions: ["lambda:ListEventSourceMappings"],
+            resources: ["*"],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "aws:RequestedRegion",
+                values: ["ap-northeast-1"],
+              },
+            ],
+          },
+          {
             // SQS CreateQueue authorizes against `*`; keep the queue-name
             // condition so this does not become an account-wide create grant.
             sid: "CreateAgentProductionQueues",
@@ -584,6 +630,22 @@ export default $config({
             ],
             resources: [
               "arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs*",
+            ],
+          },
+          {
+            sid: "ManageExactAgentWeeklyEvaluationRule",
+            effect: "Allow",
+            actions: [
+              "events:DescribeRule",
+              "events:ListTagsForResource",
+              "events:ListTargetsByRule",
+              "events:PutRule",
+              "events:PutTargets",
+              "events:TagResource",
+              "events:UntagResource",
+            ],
+            resources: [
+              "arn:aws:events:ap-northeast-1:205480711070:rule/beat-agent-api-production-weekly-evaluation",
             ],
           },
           {
@@ -636,6 +698,8 @@ export default $config({
             resources: [
               "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-server-errors",
               "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-latency",
+              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-jobs-dlq",
+              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-daily-model-tokens",
             ],
           },
           {

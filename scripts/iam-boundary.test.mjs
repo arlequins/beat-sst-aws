@@ -212,10 +212,14 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     "arn:aws:s3:::beat-agent-api-production-data/*",
     "arn:aws:iam::205480711070:role/beat-agent-api-production-*",
     "arn:aws:lambda:ap-northeast-1:205480711070:function:beat-agent-api-production-*",
+    "arn:aws:lambda:ap-northeast-1:205480711070:event-source-mapping:*",
     "arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs*",
+    "arn:aws:events:ap-northeast-1:205480711070:rule/beat-agent-api-production-weekly-evaluation",
     "arn:aws:logs:ap-northeast-1:205480711070:log-group:/aws/lambda/beat-agent-api-production-*",
     "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-server-errors",
     "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-latency",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-jobs-dlq",
+    "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-daily-model-tokens",
     "arn:aws:cloudwatch::205480711070:dashboard/beat-agent-api-production",
   ]) {
     assert.ok(policy.includes(arn), `missing Agent ARN: ${arn}`);
@@ -231,8 +235,14 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     "iam:PassRole",
     "lambda:CreateFunction",
     "lambda:CreateFunctionUrlConfig",
+    "lambda:CreateEventSourceMapping",
+    "lambda:GetEventSourceMapping",
+    "lambda:ListEventSourceMappings",
+    "lambda:UpdateEventSourceMapping",
     "sqs:CreateQueue",
     "sqs:SetQueueAttributes",
+    "events:PutRule",
+    "events:PutTargets",
     "logs:CreateLogGroup",
     "logs:FilterLogEvents",
     "cloudwatch:PutMetricAlarm",
@@ -246,10 +256,10 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   assert.doesNotMatch(policy, /arn:aws:s3:::beat-agent-api-production-\*\/\*/);
   assert.doesNotMatch(policy, /arn:aws:secretsmanager:/);
   assert.doesNotMatch(policy, /AdministratorAccess/);
-  assert.doesNotMatch(policy, /[a-z]+:\*/);
+  assert.doesNotMatch(policy, /"[a-z]+:\*"/);
   assert.doesNotMatch(
     policy,
-    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
+    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|lambda:DeleteEventSourceMapping|events:DeleteRule|events:RemoveTargets|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
   );
   assert.match(
     source,
@@ -262,6 +272,18 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   assert.match(
     policy,
     /sid: "ManageAgentProductionQueues"[\s\S]*?actions: \[[\s\S]*?"sqs:SetQueueAttributes"[\s\S]*?\][\s\S]*?arn:aws:sqs:ap-northeast-1:205480711070:beat-agent-api-production-jobs\*/,
+  );
+  assert.match(
+    policy,
+    /sid: "CreateAgentProductionEventSourceMappings"[\s\S]*?actions: \["lambda:CreateEventSourceMapping"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "lambda:FunctionArn"[\s\S]*?function:beat-agent-api-production-\*/,
+  );
+  assert.match(
+    policy,
+    /sid: "DiscoverAgentProductionEventSourceMappings"[\s\S]*?actions: \["lambda:ListEventSourceMappings"\][\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
+  );
+  assert.match(
+    policy,
+    /sid: "ManageExactAgentWeeklyEvaluationRule"[\s\S]*?"events:PutRule"[\s\S]*?"events:PutTargets"[\s\S]*?rule\/beat-agent-api-production-weekly-evaluation/,
   );
 });
 
