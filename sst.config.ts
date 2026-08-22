@@ -747,22 +747,6 @@ export default $config({
             ],
           },
           {
-            // These two alarms were partially created with Pulumi auto-names
-            // before Beat Agent pinned the provider's `name` property. This
-            // exact, temporary boundary lets the corrected deployment inspect
-            // and replace only those known orphan resources.
-            sid: "CleanupKnownAgentAutonamedAlarms",
-            effect: "Allow",
-            actions: [
-              "cloudwatch:DeleteAlarms",
-              "cloudwatch:ListTagsForResource",
-            ],
-            resources: [
-              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:DailyModelTokenBudget-fc2f718",
-              "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:AgentJobsDeadLetterMessages-8eef19a",
-            ],
-          },
-          {
             sid: "ManageExactAgentProductionDashboard",
             effect: "Allow",
             actions: [

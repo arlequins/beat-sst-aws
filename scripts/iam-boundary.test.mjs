@@ -259,7 +259,7 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   assert.doesNotMatch(policy, /"[a-z]+:\*"/);
   assert.doesNotMatch(
     policy,
-    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|lambda:DeleteEventSourceMapping|events:DeleteRule|events:RemoveTargets|logs:DeleteLogGroup|cloudwatch:DeleteDashboards)"/,
+    /"(?:s3:DeleteBucket|s3:DeleteObjectVersion|iam:DeleteRole|lambda:DeleteFunction|lambda:DeleteEventSourceMapping|events:DeleteRule|events:RemoveTargets|logs:DeleteLogGroup|cloudwatch:DeleteAlarms|cloudwatch:DeleteDashboards)"/,
   );
   assert.match(
     source,
@@ -297,11 +297,6 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     policy,
     /sid: "ManageAgentProductionAlarms"[\s\S]*?"cloudwatch:PutMetricAlarm"[\s\S]*?"cloudwatch:UntagResource"[\s\S]*?beat-agent-api-production-jobs-dlq[\s\S]*?beat-agent-api-production-daily-model-tokens/,
   );
-  assert.match(
-    policy,
-    /sid: "CleanupKnownAgentAutonamedAlarms"[\s\S]*?"cloudwatch:DeleteAlarms"[\s\S]*?"cloudwatch:ListTagsForResource"[\s\S]*?DailyModelTokenBudget-fc2f718[\s\S]*?AgentJobsDeadLetterMessages-8eef19a/,
-  );
-  assert.equal(policy.match(/"cloudwatch:DeleteAlarms"/g)?.length, 1);
 });
 
 test("gives Beat Agent SST its own exact passphrase parameter", () => {
