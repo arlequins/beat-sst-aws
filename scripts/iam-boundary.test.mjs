@@ -287,7 +287,7 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   );
   assert.match(
     policy,
-    /sid: "TagAgentProductionAlarmsOnCreate"[\s\S]*?actions: \["cloudwatch:TagResource"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "aws:RequestTag\/sst:app"[\s\S]*?beat-agent-api[\s\S]*?variable: "aws:RequestTag\/sst:stage"[\s\S]*?production[\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
+    /sid: "CreateTaggedAgentProductionAlarms"[\s\S]*?"cloudwatch:PutMetricAlarm"[\s\S]*?"cloudwatch:TagResource"[\s\S]*?resources: \["\*"\][\s\S]*?variable: "aws:RequestTag\/Application"[\s\S]*?beat-agent[\s\S]*?variable: "aws:RequestTag\/Stage"[\s\S]*?production[\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
   );
   assert.match(
     policy,
