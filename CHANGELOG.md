@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/arlequins/beat-sst-aws/compare/v0.6.2...v0.6.3) (2026-08-22)
+
+
+### Bug Fixes
+
+* **iam:** authorize tagged alarm creation ([#59](https://github.com/arlequins/beat-sst-aws/issues/59)) ([f86e2bf](https://github.com/arlequins/beat-sst-aws/commit/f86e2bfd726577fce763473e07cc783378327aa4))
+
 ## [0.6.2](https://github.com/arlequins/beat-sst-aws/compare/v0.6.1...v0.6.2) (2026-08-22)
 
 
