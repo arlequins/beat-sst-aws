@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.7](https://github.com/arlequins/beat-sst-aws/compare/v0.6.6...v0.6.7) (2026-08-24)
+
+
+### Bug Fixes
+
+* **iam:** allow Bedrock deployment preflight ([#67](https://github.com/arlequins/beat-sst-aws/issues/67)) ([63ad5aa](https://github.com/arlequins/beat-sst-aws/commit/63ad5aa96b2bd5aa4b7c19b0385846e0358ba775))
+
 ## [0.6.6](https://github.com/arlequins/beat-sst-aws/compare/v0.6.5...v0.6.6) (2026-08-22)
 
 
