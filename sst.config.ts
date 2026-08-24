@@ -479,6 +479,24 @@ export default $config({
             resources: ["arn:aws:s3:::beat-agent-api-production-data/*"],
           },
           {
+            // The Agent deployment workflow performs a read-only preflight for
+            // the exact foundation models before invoking SST.
+            sid: "ReadAgentBedrockFoundationModels",
+            effect: "Allow",
+            actions: ["bedrock:GetFoundationModel"],
+            resources: [
+              "arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.nova-lite-v1:0",
+              "arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.titan-embed-text-v2:0",
+            ],
+            conditions: [
+              {
+                test: "StringEquals",
+                variable: "aws:RequestedRegion",
+                values: ["ap-northeast-1"],
+              },
+            ],
+          },
+          {
             sid: "ManageAgentProductionRuntimeRoles",
             effect: "Allow",
             actions: [
