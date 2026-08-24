@@ -68,6 +68,9 @@ CloudWatch's tagged-alarm creation path is limited by the explicit
 region; alarm reads, updates, and untagging remain bound to the four exact alarm
 ARNs, except the read-only regional `DescribeAlarms` discovery call that
 CloudWatch authorizes at account scope.
+The policy also permits read-only `bedrock:GetFoundationModel` access to the
+exact Nova Lite and Titan embedding model ARNs in `ap-northeast-1`, which the
+Agent deployment workflow uses for its preflight check.
 Alarm deletion remains excluded after the one-time fixed-name migration.
 It does not read the Beat runtime secret or grant access to Beat's
 `api-production-*` and `web-production-*` resources. Pass the emitted

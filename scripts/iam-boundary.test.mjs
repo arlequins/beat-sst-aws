@@ -221,6 +221,8 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-jobs-dlq",
     "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:beat-agent-api-production-daily-model-tokens",
     "arn:aws:cloudwatch::205480711070:dashboard/beat-agent-api-production",
+    "arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.nova-lite-v1:0",
+    "arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.titan-embed-text-v2:0",
   ]) {
     assert.ok(policy.includes(arn), `missing Agent ARN: ${arn}`);
   }
@@ -247,6 +249,7 @@ test("limits Beat Agent production deployment to its own application prefix", ()
     "logs:FilterLogEvents",
     "cloudwatch:PutMetricAlarm",
     "cloudwatch:PutDashboard",
+    "bedrock:GetFoundationModel",
   ]) {
     assert.ok(policy.includes(`"${action}"`), `missing Agent action: ${action}`);
   }
@@ -292,6 +295,10 @@ test("limits Beat Agent production deployment to its own application prefix", ()
   assert.match(
     policy,
     /sid: "DiscoverAgentProductionAlarms"[\s\S]*?actions: \["cloudwatch:DescribeAlarms"\][\s\S]*?resources: \["\*"\][\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
+  );
+  assert.match(
+    policy,
+    /sid: "ReadAgentBedrockFoundationModels"[\s\S]*?actions: \["bedrock:GetFoundationModel"\][\s\S]*?amazon\.nova-lite-v1:0[\s\S]*?amazon\.titan-embed-text-v2:0[\s\S]*?variable: "aws:RequestedRegion"[\s\S]*?ap-northeast-1/,
   );
   assert.match(
     policy,
