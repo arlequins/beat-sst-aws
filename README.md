@@ -20,6 +20,10 @@ resources:
 - GitHub OIDC trust and the Beat / Beat Agent production deployment roles;
 - the empty Beat runtime secret container.
 
+The existing monthly budget keeps its original start date across bootstrap
+deployments; only `timePeriodStart` is ignored when the shared baseline computes
+a new month's date. Budget limits and notifications continue to be reconciled.
+
 The Beat application repository owns its generated state and ledger buckets,
 Lambda functions, static site, and other application resources. Do not create a
 second authentication or content bucket here. The application stack injects
