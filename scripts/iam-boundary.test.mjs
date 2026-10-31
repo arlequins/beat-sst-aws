@@ -191,23 +191,23 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
 });
 
-test("limits temporary alarm retirement to three reviewed API alarm ARNs", () => {
+test("limits recovery metadata reads to the exact Beat authentication state bucket", () => {
   const policy = policySource(
-    "retiredApiAlarmDeletionPolicy",
-    "BeatRetiredApiAlarmDeletion",
+    "authStateRecoveryMetadataReadPolicy",
+    "BeatAuthStateRecoveryMetadataRead",
   );
 
-  assert.match(policy, /actions: \["cloudwatch:DeleteAlarms"\]/);
+  assert.match(policy, /actions: \["s3:ListBucketVersions"\]/);
   assert.deepEqual(
     [...policy.matchAll(/"(arn:aws:[^"]+)"/g)].map((match) => match[1]),
-    [
-      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ApiLatency",
-      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ReconciliationBacklog",
-      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ConditionalWriteConflicts",
-    ],
+    ["arn:aws:s3:::api-production-authstatebucket-odbkoebe"],
   );
   assert.doesNotMatch(policy, /\*/);
-  assert.equal((policy.match(/"cloudwatch:[^"]+"/g) ?? []).length, 1);
+  assert.equal((policy.match(/"s3:[^"]+"/g) ?? []).length, 1);
+});
+
+test("removes all temporary alarm-deletion permissions after retirement", () => {
+  assert.doesNotMatch(source, /cloudwatch:DeleteAlarms/);
 });
 
 test("does not retain retired web deployment permissions", () => {
