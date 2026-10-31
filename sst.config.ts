@@ -41,6 +41,13 @@ export default $config({
       stage: $app.stage,
       owner: required("BEAT_OWNER"),
     });
+    // The shared baseline computes the current month on every run. Preserve
+    // the stored creation date instead of shifting an existing budget forward.
+    $transform(aws.budgets.Budget, (_args, opts, name) => {
+      if (name === "MonthlyCostBudget") {
+        opts.ignoreChanges = [...(opts.ignoreChanges ?? []), "timePeriodStart"];
+      }
+    });
     const baseline = createAccountBaseline({
       stage: $app.stage,
       region,
