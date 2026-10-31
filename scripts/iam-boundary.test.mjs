@@ -191,6 +191,25 @@ test("limits API production deployment to the reviewed service and ARN set", () 
   );
 });
 
+test("limits temporary alarm retirement to three reviewed API alarm ARNs", () => {
+  const policy = policySource(
+    "retiredApiAlarmDeletionPolicy",
+    "BeatRetiredApiAlarmDeletion",
+  );
+
+  assert.match(policy, /actions: \["cloudwatch:DeleteAlarms"\]/);
+  assert.deepEqual(
+    [...policy.matchAll(/"(arn:aws:[^"]+)"/g)].map((match) => match[1]),
+    [
+      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ApiLatency",
+      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ReconciliationBacklog",
+      "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ConditionalWriteConflicts",
+    ],
+  );
+  assert.doesNotMatch(policy, /\*/);
+  assert.equal((policy.match(/"cloudwatch:[^"]+"/g) ?? []).length, 1);
+});
+
 test("does not retain retired web deployment permissions", () => {
   assert.doesNotMatch(source, /BeatWebPassphraseParameterRead/);
   assert.doesNotMatch(source, /BeatWebProductionDeployment/);

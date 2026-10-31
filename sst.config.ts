@@ -380,6 +380,25 @@ export default $config({
       policy: apiProductionDeploymentPolicy.json,
     });
 
+    // Remove this policy after the three alarms retired by Beat #403 are gone.
+    const retiredApiAlarmDeletionPolicy = aws.iam.getPolicyDocumentOutput({
+      statements: [
+        {
+          effect: "Allow",
+          actions: ["cloudwatch:DeleteAlarms"],
+          resources: [
+            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ApiLatency",
+            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ReconciliationBacklog",
+            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ConditionalWriteConflicts",
+          ],
+        },
+      ],
+    });
+    new aws.iam.RolePolicy("BeatRetiredApiAlarmDeletion", {
+      role: deployRole.name,
+      policy: retiredApiAlarmDeletionPolicy.json,
+    });
+
     // Beat Agent is a separate application and therefore receives a separate
     // OIDC trust boundary and a resource-prefix-scoped deployment policy. Do
     // not broaden the Beat role to cover the Agent stack.

@@ -52,6 +52,12 @@ inline identity policies:
   bucket and `api-production-*` S3 buckets, runtime roles, Lambda functions,
   reconciliation schedule, Lambda log groups, alarms, and the
   `api-production` dashboard; and
+- a temporary alarm-retirement policy that allows `cloudwatch:DeleteAlarms`
+  only on `api-production-ApiLatency`, `api-production-ReconciliationBacklog`,
+  and `api-production-ConditionalWriteConflicts` in `ap-northeast-1`.
+  Remove this separate policy after Beat's protected deployment confirms the
+  three alarms have been deleted. The normal deployment policy continues to
+  exclude alarm deletion.
 
 The bootstrap also creates the separate `beat-agent-github-production` role for
 the `arlequins/beat-agent` repository's `production` Environment. Its trust
