@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.8](https://github.com/arlequins/beat-sst-aws/compare/v0.6.7...v0.6.8) (2026-10-31)
+
+
+### Bug Fixes
+
+* **bootstrap:** preserve the existing budget start date ([#71](https://github.com/arlequins/beat-sst-aws/issues/71)) ([2ac7239](https://github.com/arlequins/beat-sst-aws/commit/2ac7239f2052e3ef0e6f045dea747cd4c3bc6c6b))
+* **iam:** allow retirement of three obsolete Beat alarms ([#69](https://github.com/arlequins/beat-sst-aws/issues/69)) ([7068380](https://github.com/arlequins/beat-sst-aws/commit/7068380182fcea07a29130a7f008cf4052a17c64))
+* **iam:** finish alarm retirement and enable recovery checks ([#72](https://github.com/arlequins/beat-sst-aws/issues/72)) ([199af5b](https://github.com/arlequins/beat-sst-aws/commit/199af5b358b2aa56b56e10fc38735ccc30ac5932))
+
 ## [0.6.7](https://github.com/arlequins/beat-sst-aws/compare/v0.6.6...v0.6.7) (2026-08-24)
 
 
