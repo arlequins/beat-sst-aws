@@ -387,23 +387,20 @@ export default $config({
       policy: apiProductionDeploymentPolicy.json,
     });
 
-    // Remove this policy after the three alarms retired by Beat #403 are gone.
-    const retiredApiAlarmDeletionPolicy = aws.iam.getPolicyDocumentOutput({
+    const authStateRecoveryMetadataReadPolicy = aws.iam.getPolicyDocumentOutput({
       statements: [
         {
           effect: "Allow",
-          actions: ["cloudwatch:DeleteAlarms"],
+          actions: ["s3:ListBucketVersions"],
           resources: [
-            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ApiLatency",
-            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ReconciliationBacklog",
-            "arn:aws:cloudwatch:ap-northeast-1:205480711070:alarm:api-production-ConditionalWriteConflicts",
+            "arn:aws:s3:::api-production-authstatebucket-odbkoebe",
           ],
         },
       ],
     });
-    new aws.iam.RolePolicy("BeatRetiredApiAlarmDeletion", {
+    new aws.iam.RolePolicy("BeatAuthStateRecoveryMetadataRead", {
       role: deployRole.name,
-      policy: retiredApiAlarmDeletionPolicy.json,
+      policy: authStateRecoveryMetadataReadPolicy.json,
     });
 
     // Beat Agent is a separate application and therefore receives a separate
